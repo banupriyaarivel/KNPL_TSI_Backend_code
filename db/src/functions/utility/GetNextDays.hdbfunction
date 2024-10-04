@@ -133,11 +133,11 @@ BEGIN
   END IF;
 
   IF isStartDate = 1 THEN
-    -- result := (YEAR(startDateVal)) || startDateMonth || startDateDay;
-    result := '20210926';
+    result := (YEAR(startDateVal)) || startDateMonth || startDateDay;
+    -- result := '20210926';
   ELSE
-    -- result := (YEAR(endDateVal)) || endDateMonth || endDateDay;
-    result := '20210930';
+    result := (YEAR(endDateVal)) || endDateMonth || endDateDay;
+    -- result := '20210930';
   END IF;
 
 END;

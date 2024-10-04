@@ -18,7 +18,7 @@
       "webRoot": "${workspaceFolder}"
     },
     {
-      "name": "Run TSI-2",
+      "name": "Run KNPL_TSI_Backend_code-2",
       "request": "launch",
       "type": "node",
       "cwd": "${workspaceFolder}",
@@ -35,7 +35,7 @@
       "envFile": "${workspaceFolder}/.env2",
       "env": {
         "NODE_ENV": "development",
-        "run.config": "{\"handlerId\":\"cap_run_config_handler_id\",\"runnableId\":\"{\\\"projectPath\\\":\\\"/home/user/projects/KNPL-TSI/TSI\\\",\\\"profileName\\\":\\\"development\\\"}\"}"
+        "run.config": "{\"handlerId\":\"cap_run_config_handler_id\",\"runnableId\":\"{\\\"projectPath\\\":\\\"/home/user/projects/KNPL_TSI_Backend_code\\\",\\\"profileName\\\":\\\"development\\\"}\"}"
       }
     }
   ]

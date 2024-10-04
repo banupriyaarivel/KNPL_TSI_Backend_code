@@ -12,7 +12,6 @@ async function requestValidator(req) {
     if(reqObj && reqObj.salesGroup) {
       const response = await getUserInfoByAPIAccess(userInfo.id);
     //    code for debug locally
-    // // const response = await getUserInfoByAPIAccess(userInfo.id);
         // let response = {
         //     "totalResults" : 1 ,
         //     "resources" : [
