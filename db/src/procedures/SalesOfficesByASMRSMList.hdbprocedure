@@ -21,47 +21,91 @@ BEGIN
 
     IF rsmCnt > 0 THEN
         IF searchText IS NULL THEN 
-            SELECT "VKGRP" AS "SALES_GROUP", "TSINAME" AS "NAME",
-            false AS "IS_SELECTED", true AS "IS_VISIBLE"
-            FROM "DGA_ZEMP_MASTER_ECC"
-            WHERE UPPER("EMAIL_DSM") = :upperEmail
-            AND "VKGRP" != '' AND "VKGRP" != 'N.A'
-            AND "VKGRP" >= '002' AND "VKGRP" <= '776'
-            GROUP BY "TSINAME", "VKGRP" ORDER BY "VKGRP" ASC;
+            SELECT ECC."VKGRP" AS "SALES_GROUP", ECC."TSINAME" AS "NAME",PCUSTOMER."SALES_GRP" AS "SALES_GROUP",
+             false AS "IS_SELECTED", true AS "IS_VISIBLE"
+            FROM "DGA_ZEMP_MASTER_ECC" AS ECC
+            JOIN "/BI0/PCUSTOMER" AS PCUSTOMER  ON ECC."VKGRP" = PCUSTOMER."SALES_GRP"
+            JOIN "/BI0/SSALES_GRP" AS SALES ON SALES."SALES_GRP" = PCUSTOMER."SALES_GRP"
+            WHERE UPPER(ECC."EMAIL_DSM") = :upperEmail AND ECC."VKGRP" != '' 
+            AND ECC."VKGRP" != 'N.A'AND ECC."VKGRP" >= '001'AND ECC."VKGRP" <= '999' AND ECC."VKGRP" != '777'
+            GROUP BY ECC."TSINAME", ECC."VKGRP", PCUSTOMER."SALES_GRP"
+            ORDER BY PCUSTOMER."SALES_GRP" ASC; 
+
+            -- SELECT "VKGRP" AS "SALES_GROUP", "TSINAME" AS "NAME",
+            -- false AS "IS_SELECTED", true AS "IS_VISIBLE"
+            -- FROM "DGA_ZEMP_MASTER_ECC"
+            -- WHERE UPPER("EMAIL_DSM") = :upperEmail
+            -- AND "VKGRP" != '' AND "VKGRP" != 'N.A'
+            -- AND "VKGRP" >= '002' AND "VKGRP" <= '776'
+            -- GROUP BY "TSINAME", "VKGRP" ORDER BY "VKGRP" ASC;
         ELSE 
             searchText := '%' || UPPER(searchText) || '%';
             
-            SELECT "VKGRP" AS "SALES_GROUP", "TSINAME" AS "NAME",
+            SELECT PCUSTOMER."SALES_GRP" AS "SALES_GROUP", ECC."TSINAME" AS "NAME",
             false AS "IS_SELECTED", true AS "IS_VISIBLE"
-            FROM "DGA_ZEMP_MASTER_ECC"
-            WHERE UPPER("EMAIL_DSM") = :upperEmail
-            AND "VKGRP" != '' AND "VKGRP" != 'N.A'
-            AND "VKGRP" >= '002' AND "VKGRP" <= '776'
-            AND (UPPER("TSINAME") LIKE searchText OR "VKGRP" LIKE searchText)
-            GROUP BY "TSINAME", "VKGRP" ORDER BY "VKGRP" ASC;            
+            FROM "DGA_ZEMP_MASTER_ECC" AS ECC
+            JOIN  "/BI0/PCUSTOMER" AS PCUSTOMER  ON ECC."VKGRP" = PCUSTOMER."SALES_GRP"
+            JOIN "/BI0/SSALES_GRP" AS SALES ON SALES."SALES_GRP" = PCUSTOMER."SALES_GRP"
+            WHERE UPPER(ECC."EMAIL_DSM") = :upperEmail
+            AND ECC."VKGRP" != ''  AND ECC."VKGRP" != 'N.A' AND ECC."VKGRP" >= '001' AND ECC."VKGRP" <= '999'
+            AND ECC."VKGRP" != '777' AND (UPPER(ECC."TSINAME") LIKE searchText OR ECC."VKGRP" LIKE searchText )
+            GROUP BY ECC."TSINAME", ECC."VKGRP", PCUSTOMER."SALES_GRP"
+            ORDER BY PCUSTOMER."SALES_GRP" ASC;
+
+            -- SELECT "VKGRP" AS "SALES_GROUP", "TSINAME" AS "NAME",
+            -- false AS "IS_SELECTED", true AS "IS_VISIBLE"
+            -- FROM "DGA_ZEMP_MASTER_ECC"
+            -- WHERE UPPER("EMAIL_DSM") = :upperEmail
+            -- AND "VKGRP" != '' AND "VKGRP" != 'N.A'
+            -- AND "VKGRP" >= '002' AND "VKGRP" <= '776'
+            -- AND (UPPER("TSINAME") LIKE searchText OR "VKGRP" LIKE searchText)
+            -- GROUP BY "TSINAME", "VKGRP" ORDER BY "VKGRP" ASC;            
         END IF;
     END IF;
 
     IF asmCnt > 0 THEN
         IF searchText IS NULL THEN 
-            SELECT "VKGRP" AS "SALES_GROUP", "TSINAME" AS "NAME",
+
+            SELECT PCUSTOMER."SALES_GRP" AS "SALES_GROUP", "TSINAME" AS "NAME",
             false AS "IS_SELECTED", true AS "IS_VISIBLE"
-            FROM "DGA_ZEMP_MASTER_ECC"
-            WHERE UPPER("EMAIL_ASM") = :upperEmail
-            AND "VKGRP" != '' AND "VKGRP" != 'N.A'
-            AND "VKGRP" >= '002' AND "VKGRP" <= '776'
-            GROUP BY "TSINAME", "VKGRP" ORDER BY "TSINAME" ASC;
+            FROM "DGA_ZEMP_MASTER_ECC" AS ECC
+            JOIN  "/BI0/PCUSTOMER" AS PCUSTOMER  ON ECC."VKGRP" = PCUSTOMER."SALES_GRP"
+            JOIN "/BI0/SSALES_GRP" AS SALES ON SALES."SALES_GRP" = PCUSTOMER."SALES_GRP"
+            WHERE UPPER(ECC."EMAIL_ASM") = :upperEmail
+            AND ECC."VKGRP" != '' AND ECC."VKGRP" != 'N.A'
+            AND ECC."VKGRP" >= '001' AND ECC."VKGRP" <= '999' AND ECC."VKGRP" != '777'
+            GROUP BY ECC."TSINAME", PCUSTOMER."SALES_GRP" ORDER BY ECC."TSINAME" ASC;
+
+          
+            -- SELECT "VKGRP" AS "SALES_GROUP", "TSINAME" AS "NAME",
+            -- false AS "IS_SELECTED", true AS "IS_VISIBLE"
+            -- FROM "DGA_ZEMP_MASTER_ECC" AS ECC
+            -- WHERE UPPER("EMAIL_ASM") = :upperEmail
+            -- AND "VKGRP" != '' AND "VKGRP" != 'N.A'
+            -- AND "VKGRP" >= '002' AND "VKGRP" <= '776'
+            -- GROUP BY "TSINAME", "VKGRP" ORDER BY "TSINAME" ASC;
         ELSE 
             searchText := '%' || UPPER(searchText) || '%';
             
-            SELECT "VKGRP" AS "SALES_GROUP", "TSINAME" AS "NAME",
+            SELECT PCUSTOMER."SALES_GRP" AS "SALES_GROUP", ECC."TSINAME" AS "NAME",
             false AS "IS_SELECTED", true AS "IS_VISIBLE"
-            FROM "DGA_ZEMP_MASTER_ECC"
-            WHERE UPPER("EMAIL_ASM") = :upperEmail
-            AND "VKGRP" != '' AND "VKGRP" != 'N.A'
-            AND "VKGRP" >= '002' AND "VKGRP" <= '776'
-            AND (UPPER("TSINAME") LIKE searchText OR "VKGRP" LIKE searchText)
-            GROUP BY "TSINAME", "VKGRP" ORDER BY "TSINAME" ASC;            
+            FROM "DGA_ZEMP_MASTER_ECC" AS ECC
+            JOIN  "/BI0/PCUSTOMER" AS PCUSTOMER  ON ECC."VKGRP" = PCUSTOMER."SALES_GRP"
+            JOIN "/BI0/SSALES_GRP" AS SALES ON SALES."SALES_GRP" = PCUSTOMER."SALES_GRP"
+            WHERE UPPER(ECC."EMAIL_ASM") = :upperEmail
+            AND ECC."VKGRP" != '' AND ECC."VKGRP" != 'N.A'
+            AND ECC."VKGRP" >= '001' AND ECC."VKGRP" <= '999' AND ECC."VKGRP" != '777'
+            AND (UPPER(ECC."TSINAME") LIKE searchText OR ECC."VKGRP" LIKE searchText)
+            GROUP BY ECC."TSINAME",  PCUSTOMER."SALES_GRP" ORDER BY ECC."TSINAME" ASC;  
+
+            -- SELECT "VKGRP" AS "SALES_GROUP", "TSINAME" AS "NAME",
+            -- false AS "IS_SELECTED", true AS "IS_VISIBLE"
+            -- FROM "DGA_ZEMP_MASTER_ECC"
+            -- WHERE UPPER("EMAIL_ASM") = :upperEmail
+            -- AND "VKGRP" != '' AND "VKGRP" != 'N.A'
+            -- AND "VKGRP" >= '002' AND "VKGRP" <= '776'
+            -- AND (UPPER("TSINAME") LIKE searchText OR "VKGRP" LIKE searchText)
+            -- GROUP BY "TSINAME", "VKGRP" ORDER BY "TSINAME" ASC;            
         END IF;
     END IF; 
 END;
