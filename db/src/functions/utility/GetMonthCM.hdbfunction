@@ -10,23 +10,23 @@ BEGIN
     IF isCalMonth = 1 THEN 
         IF isStartDate = 1 THEN
             IF monthVal < 4 THEN
-                -- result := (yearVal - 1) || '04';
-                result := '202104';
+                result := (yearVal - 1) || '04';
+                -- result := '202104';
             ELSE
-                -- result := yearVal || '04';
-                result := '202104';
+                result := yearVal || '04';
+                -- result := '202104';
             END IF;
         ELSE
-            -- result := TO_NVARCHAR(currentDateVal, 'YYYYMM');
-            result := '202109';
+            result := TO_NVARCHAR(currentDateVal, 'YYYYMM');
+            -- result := '202109';
         END IF;
     ELSE 
         IF isStartDate = 1 THEN
-            -- result := TO_NVARCHAR(currentDateVal, 'YYYYMM') || '01';
-            result := '20210901';
+            result := TO_NVARCHAR(currentDateVal, 'YYYYMM') || '01';
+            -- result := '20210901';
         ELSE
-            -- result := TO_NVARCHAR(currentDateVal, 'YYYYMMDD');
-            result := '20210930';
+            result := TO_NVARCHAR(currentDateVal, 'YYYYMMDD');
+            -- result := '20210930';
         END IF;
     END IF;    
 END;

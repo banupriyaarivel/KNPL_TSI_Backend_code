@@ -12,35 +12,35 @@ BEGIN
     IF isCY = 1 THEN
         IF isStartDate = 1 THEN
             IF monthVal < 4 THEN
-                -- result := (yearVal - 1) || '0401';
-                result := '20210401';
+                result := (yearVal - 1) || '0401';
+                -- result := '20210401';
             ELSE
-                -- result := yearVal || '0401';
-                result := '20210401';
+                result := yearVal || '0401';
+                -- result := '20210401';
             END IF;            
         ELSE
             IF TO_NVARCHAR(currentDateVal, 'MMDD') = '0401' THEN
-                -- result := yearVal || '0401';
-                result := '20210929';
+                result := yearVal || '0401';
+                -- result := '20210929';
             ELSE
-                -- result := TO_NVARCHAR(yesterdayDateVal, 'YYYYMMDD');
-                result := '20210929';
+                result := TO_NVARCHAR(yesterdayDateVal, 'YYYYMMDD');
+                -- result := '20210929';
             END IF;
         END IF;
     ELSE
         IF isStartDate = 1 THEN
             IF monthVal < 4 THEN
-                -- result := (yearVal - 2) || '0401';
-                result := '20200401';
+                result := (yearVal - 2) || '0401';
+                -- result := '20200401';
             ELSE
-                -- result := (yearVal - 1) || '0401';
-                result := '20200401';
+                result := (yearVal - 1) || '0401';
+                -- result := '20200401';
             END IF;
         ELSE
-            -- dateCheck := TO_NVARCHAR(currentDateVal, 'MMDD');
-        	-- IF dateCheck = '0229' THEN dateCheck := '0228'; END IF;
-            -- result := TO_NVARCHAR(ADD_DAYS(LAST_DAY((yearVal - 1) || dateCheck), -1), 'YYYYMMDD');
-            result := '20200929';       
+            dateCheck := TO_NVARCHAR(currentDateVal, 'MMDD');
+        	IF dateCheck = '0229' THEN dateCheck := '0228'; END IF;
+            result := TO_NVARCHAR(ADD_DAYS(LAST_DAY((yearVal - 1) || dateCheck), -1), 'YYYYMMDD');
+            -- result := '20200929';       
         END IF;
     END IF;  
 END;

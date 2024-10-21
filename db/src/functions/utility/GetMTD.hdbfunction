@@ -9,21 +9,22 @@ BEGIN
 
     IF isCY = 1 THEN
         IF isStartDate = 1 THEN
-            -- result := TO_NVARCHAR(currentDateVal, 'YYYYMM') || '01';
-            result := '20210901';
+            result := TO_NVARCHAR(currentDateVal, 'YYYYMM') || '01';
+            -- result := '20210901';
         ELSE
-            -- result := TO_NVARCHAR(currentDateVal, 'YYYYMMDD');
-            result := '20210930';
+            result := TO_NVARCHAR(currentDateVal, 'YYYYMMDD');
+            -- result := '20210930';
         END IF;
     ELSE
         IF isStartDate = 1 THEN
-            -- result := (yearVal -1) || TO_NVARCHAR(currentDateVal, 'MM') || '01';
-            result := '20200901';
+            result := (yearVal -1) || TO_NVARCHAR(currentDateVal, 'MM') || '01';
+            -- result := '20200901';
         ELSE
-            -- dateCheck := TO_NVARCHAR(currentDateVal, 'MMDD');
-            -- IF dateCheck = '0229' THEN dateCheck := '0228' END IF;
-            -- result := TO_NVARCHAR((yearVal - 1) || dateCheck, 'YYYYMMDD');
-            result := '20200930';
+            dateCheck := TO_NVARCHAR(currentDateVal, 'MMDD');
+            IF dateCheck = '0229' THEN dateCheck := '0228'; END IF;
+            result := TO_NVARCHAR((yearVal - 1) || dateCheck, 'YYYYMMDD');
+            -- result := '20200930';
         END IF;
     END IF;    
 END;
+

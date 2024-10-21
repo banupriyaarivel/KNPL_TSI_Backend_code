@@ -9,19 +9,19 @@ BEGIN
 
     IF isStartDate = 1 THEN
         IF monthVal < 4 THEN
-            -- result := (yearVal - 2) || '0401';
-            result := '20200401';
+            result := (yearVal - 2) || '0401';
+            -- result := '20200401';
         ELSE
-            -- result := (yearVal - 1) || '0401';
-            result := '20200401';
+            result := (yearVal - 1) || '0401';
+            -- result := '20200401';
         END IF;
     ELSE
         IF monthVal < 4 THEN
-            -- result := (yearVal - 1) || '0331';
-            result := '20200401';
+            result := (yearVal - 1) || '0331';
+            -- result := '20200401';
         ELSE
-            -- result := yearVal || '0331';
-            result := '20200401';
+            result := yearVal || '0331';
+            -- result := '20200401';
         END IF;
     END IF;
 END;

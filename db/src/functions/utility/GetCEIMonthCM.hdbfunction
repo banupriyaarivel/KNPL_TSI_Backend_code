@@ -5,6 +5,6 @@ FUNCTION "GetCEIMonthCM"()
 BEGIN
     DECLARE currentDateVal DATE := CURRENT_DATE;
     
-    -- result := TO_NVARCHAR(ADD_MONTHS_LAST(currentDateVal, -1), 'YYYYMM');
-    result := '202109';
+    result := TO_NVARCHAR(ADD_MONTHS_LAST(currentDateVal, -1), 'YYYYMM');
+    -- result := '202109';
 END;

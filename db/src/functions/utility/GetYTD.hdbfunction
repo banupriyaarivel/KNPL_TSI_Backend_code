@@ -11,30 +11,30 @@ BEGIN
     IF isCY = 1 THEN
         IF isStartDate = 1 THEN
             IF monthVal < 4 THEN
-                -- result := (yearVal - 1) || '0401';
-                result := '20210401';
+                result := (yearVal - 1) || '0401';
+                -- result := '20210401';
             ELSE
-                -- result := yearVal || '0401';
-                result := '20210401';
+                result := yearVal || '0401';
+                -- result := '20210401';
             END IF;            
         ELSE
-            -- result := TO_NVARCHAR(currentDateVal, 'YYYYMMDD');
-            result := '20210930';
+            result := TO_NVARCHAR(currentDateVal, 'YYYYMMDD');
+            -- result := '20210930';
         END IF;
     ELSE
         IF isStartDate = 1 THEN
             IF monthVal < 4 THEN
-                -- result := (yearVal - 2) || '0401';
-                result := '20200401';
+                result := (yearVal - 2) || '0401';
+                -- result := '20200401';
             ELSE
-                -- result := (yearVal - 1) || '0401';
-                result := '20200401';
+                result := (yearVal - 1) || '0401';
+                -- result := '20200401';
             END IF;
         ELSE
-        	-- dateCheck := TO_NVARCHAR(currentDateVal, 'MMDD');
-        	-- IF dateCheck = '0229' THEN dateCheck := '0228'; END IF;
-            -- result := TO_NVARCHAR((yearVal - 1) || dateCheck, 'YYYYMMDD');
-            result := '20200930';
+        	dateCheck := TO_NVARCHAR(currentDateVal, 'MMDD');
+        	IF dateCheck = '0229' THEN dateCheck := '0228'; END IF;
+            result := TO_NVARCHAR((yearVal - 1) || dateCheck, 'YYYYMMDD');
+            -- result := '20200930';
         END IF;
     END IF;    
-END;
+END
