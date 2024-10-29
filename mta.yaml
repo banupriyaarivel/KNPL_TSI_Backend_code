@@ -2,15 +2,14 @@ _schema-version: "3.1"
 ID: TSI
 description: TSI CAP Project
 version: 1.0.0
-
 modules:
 - name: TSI-srv
   type: nodejs
   path: gen/srv
   requires:
-    - name: TSI-HDI-CONTAINER
-    - name: TSI-xsuaa
-    - name: knpl-tsi-destination-service
+  - name: TSI-HDI-CONTAINER
+  - name: TSI-xsuaa
+  - name: knpl-tsi-destination-service
   provides:
   - name: srv-api
     properties:
@@ -20,7 +19,6 @@ modules:
     memory: 256MB
   build-parameters:
     builder: npm-ci
-
 - name: TSI-db-Deployer
   type: hdb
   path: gen/db
@@ -31,7 +29,30 @@ modules:
   parameters:
     buildpack: nodejs_buildpack
     memory: 128MB
-
+- name: TSI-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: TSI-repo-host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - knpltsiiasuserknpltsiias.zip
+      name: knpltsiiasuserknpltsiias
+      target-path: resources/
+- name: knpltsiiasuserknpltsiias
+  type: html5
+  path: app/knpl_tsi__ias
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
 resources:
 - name: TSI-HDI-CONTAINER
   type: com.sap.xs.hdi-container
@@ -42,27 +63,45 @@ resources:
   parameters:
     service-name: TSI-ACCESS
   properties:
-    the-service-name: ${service-name}   
+    the-service-name: ${service-name}
 - name: TSI_DGA_ACCESS
   type: org.cloudfoundry.existing-service
   parameters:
     service-name: TSI_DGA_ACCESS
   properties:
-    the-service-name: ${service-name}   
+    the-service-name: ${service-name}
 - name: TSI-xsuaa
-  parameters:
-    path: ./xs-security.json  
-    service: xsuaa    
-    service-plan: application
-    service-keys: 
-      - name: TSI-xsuaa-key      
   type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-keys:
+    - name: TSI-xsuaa-key
+    service-plan: application
 - name: knpl-tsi-destination-service
   type: org.cloudfoundry.managed-service
   parameters:
+    config:
+      HTML5Runtime_enabled: false
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          existing_destinations_policy: update
     service: destination
     service-plan: lite
+- name: TSI-repo-host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: TSI-html5-srv
+    service-plan: app-host
 parameters:
+  deploy_mode: html5-repo
   enable-parallel-deployments: true
 build-parameters:
   before-all:

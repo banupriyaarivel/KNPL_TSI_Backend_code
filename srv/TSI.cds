@@ -1,15 +1,39 @@
 //  @(requires : 'authenticated-user')
-@path:'/tsi'
+using {
+    USER,
+    USER_SALES_GROUP_MAP,
+    MAP_USER_ROLE
+} from '../db/user';
+
+@path: '/tsi'
 service TSIService {
+
+    entity User           as projection on USER;
+    entity UserSalesGroup as projection on USER_SALES_GROUP_MAP;
+    entity MapUserRole as projection on MAP_USER_ROLE;
+    
+    // action   getUsers()                                                 returns String;
+    // action   findUser(email : String)                                   returns String;
+    // action   findMyUser(email : String)                                 returns String;
+
+    action   createIAS(
+        familyName : String,
+        givenName : String,
+        email : String,
+        phoneNumber : String,
+        userName : String,
+        active : Boolean
+        ) returns String;
+
     define type GeneralValueType {
         VALUE : String;
         IS_HL : Boolean
     }
 
     define type GeneralNameValueType {
-        NAME    : String;
-        VALUE   : String;
-        IS_HL   : Boolean
+        NAME  : String;
+        VALUE : String;
+        IS_HL : Boolean
     }
 
     define type SaleValueKPIResult {
@@ -23,7 +47,7 @@ service TSIService {
         NAME            : String;
         MONTH_BEGINNING : GeneralValueType;
         TILL_YESTERDAY  : GeneralValueType;
-        // NEXT_5_DAYS     : GeneralValueType; (OD Enhancement - Remove next 5 days)
+    // NEXT_5_DAYS     : GeneralValueType; (OD Enhancement - Remove next 5 days)
     }
 
     define type NewCCDKPIResult {
@@ -39,9 +63,9 @@ service TSIService {
     }
 
     define type VisitsKPIResult {
-        NAME      : String;
-        TOTAL_NOS : GeneralValueType;
-        UNIQUE_NOS   : GeneralValueType;
+        NAME       : String;
+        TOTAL_NOS  : GeneralValueType;
+        UNIQUE_NOS : GeneralValueType;
     }
 
     define type MeetsConductedKPIResult {
@@ -52,7 +76,7 @@ service TSIService {
     define type NotVisitedKPIResult {
         NAME         : String;
         CUSTOMER_NOS : GeneralValueType;
-        SITE_NOS : GeneralValueType;
+        SITE_NOS     : GeneralValueType;
     }
 
     define type CollectionKPIResult {
@@ -91,17 +115,17 @@ service TSIService {
     }
 
     define type CustomerODHLItem {
-        CUSTOMER_CODE                 : String;
-        CUSTOMER_NAME                 : String;
-        OS                            : String;
-        OS60                          : String;
-        MONTH_BEGINNING               : String;
-        CURRENT_OD                    :String;
-        TODAY                         :String;
-        TOMORROW                      :String;
-        NEXT_3_DAYS                   :String;
-        NEXT_5_DAYS                   :String;
-        NEXT_10_DAYS                  :String;
+        CUSTOMER_CODE   : String;
+        CUSTOMER_NAME   : String;
+        OS              : String;
+        OS60            : String;
+        MONTH_BEGINNING : String;
+        CURRENT_OD      : String;
+        TODAY           : String;
+        TOMORROW        : String;
+        NEXT_3_DAYS     : String;
+        NEXT_5_DAYS     : String;
+        NEXT_10_DAYS    : String;
     }
 
     define type CustomerODHLItemResult {
@@ -197,11 +221,11 @@ service TSIService {
     }
 
     define type ProductCategoryGroupListResult {
-        CATEGORY_CODE: String;
-        CATEGORY   : String;        
-        GROUP: String;
-        IS_SELECTED : Boolean;
-        IS_VISIBLE  : Boolean;
+        CATEGORY_CODE : String;
+        CATEGORY      : String;
+        GROUP         : String;
+        IS_SELECTED   : Boolean;
+        IS_VISIBLE    : Boolean;
     }
 
     define type CustomerProductParticipationKPIResult {
@@ -226,230 +250,135 @@ service TSIService {
     }
 
     // User profile API
-    function getUserProfile(
-        email : String, 
-        appVersion: String
-    ) returns UserProfileResult;
+    function getUserProfile(email : String,
+                            appVersion : String)                        returns UserProfileResult;
 
     // Home KPIs
-    function getUpcomingODKPIs(
-        salesGroup : String
-    ) returns array of CollectionKPIResult;
-
-    function getCollectionKPIs(
-        salesGroup : String
-    ) returns array of CollectionKPIResult;
-
-    function getSalesValueKPIs(
-        salesGroup : String
-    ) returns array of SaleValueKPIResult;
-
-    function getVolumeKPIs(
-        salesGroup : String
-    ) returns array of SaleValueKPIResult;
-
-    function getActiveDealerKPIs(
-        salesGroup : String
-    ) returns array of ActiveDealerKPIResult;
-
-    function getBelowThresholdKPIs(
-        salesGroup : String
-    ) returns array of CollectionKPIResult;
-
-    function getBudgetKPIs(
-        salesGroup : String
-    ) returns array of BudgetKPIResult;
-
-    function getNewCCDKPIs(
-        salesGroup : String
-    ) returns array of NewCCDKPIResult;
-
-    function getNewNDOKPIs(
-        salesGroup : String
-    ) returns array of NDOKPIResult;
-
-    function getOSODKPIs(
-        salesGroup : String
-    ) returns array of OSODKPIResult;
-
-    function getOverallVisitsKPIs(
-        salesGroup : String
-    ) returns array of TotalVisitsKPIResult;
-
-    function getSiteInfluencerVisitsKPIs(
-        salesGroup : String
-    ) returns array of VisitsKPIResult;
-
-    function getCustomerProspectVisitsKPIs(
-        salesGroup : String
-    ) returns array of VisitsKPIResult;
-
-    function getMeetsConductedKPIs(
-        salesGroup : String
-    ) returns array of MeetsConductedKPIResult;
-
-    function getNotVisitedKPIs(
-        salesGroup : String
-    ) returns array of NotVisitedKPIResult;
-
-    function getYTDTrendsKPIs(
-        salesGroup : String
-    ) returns array of YTDTrendsKPIResult;
-
+    function getUpcomingODKPIs(salesGroup : String)                     returns array of CollectionKPIResult;
+    function getCollectionKPIs(salesGroup : String)                     returns array of CollectionKPIResult;
+    function getSalesValueKPIs(salesGroup : String)                     returns array of SaleValueKPIResult;
+    function getVolumeKPIs(salesGroup : String)                         returns array of SaleValueKPIResult;
+    function getActiveDealerKPIs(salesGroup : String)                   returns array of ActiveDealerKPIResult;
+    function getBelowThresholdKPIs(salesGroup : String)                 returns array of CollectionKPIResult;
+    function getBudgetKPIs(salesGroup : String)                         returns array of BudgetKPIResult;
+    function getNewCCDKPIs(salesGroup : String)                         returns array of NewCCDKPIResult;
+    function getNewNDOKPIs(salesGroup : String)                         returns array of NDOKPIResult;
+    function getOSODKPIs(salesGroup : String)                           returns array of OSODKPIResult;
+    function getOverallVisitsKPIs(salesGroup : String)                  returns array of TotalVisitsKPIResult;
+    function getSiteInfluencerVisitsKPIs(salesGroup : String)           returns array of VisitsKPIResult;
+    function getCustomerProspectVisitsKPIs(salesGroup : String)         returns array of VisitsKPIResult;
+    function getMeetsConductedKPIs(salesGroup : String)                 returns array of MeetsConductedKPIResult;
+    function getNotVisitedKPIs(salesGroup : String)                     returns array of NotVisitedKPIResult;
+    function getYTDTrendsKPIs(salesGroup : String)                      returns array of YTDTrendsKPIResult;
     // HL Screen APIs
-    function getTownList(
-        salesGroup : String
-    )  returns array of LookupListResult;
+    function getTownList(salesGroup : String)                           returns array of LookupListResult;
+    function getCustomerList(salesGroup : String)                       returns array of LookupListResult;
 
-    function getCustomerList(
-        salesGroup : String
-    ) returns array of LookupListResult;
+    action   getCustomerODHLKPIs(salesGroup : String,
+                                 kpiType : String,
+                                 columnHeader : String,
+                                 rowHeader : String,
+                                 townName : String,
+                                 customerCode : String,
+                                 customerName : String,
+                                 productCategory : String,
+                                 productGroup : String,
+                                 sortOrder : String,
+                                 sortColumn : String,
+                                 topRec : Integer,
+                                 skipRec : Integer)                     returns CustomerODHLItemResult;
 
-    action getCustomerODHLKPIs(
-        salesGroup : String, 
-        kpiType : String, 
-        columnHeader : String, 
-        rowHeader : String, 
-        townName : String, 
-        customerCode : String, 
-        customerName : String, 
-        productCategory: String, 
-        productGroup: String, 
-        sortOrder : String, 
-        sortColumn : String, 
-        topRec : Integer, 
-        skipRec : Integer
-    ) returns CustomerODHLItemResult;
+    action   getCustomerHLKPIs(salesGroup : String,
+                               kpiType : String,
+                               columnHeader : String,
+                               rowHeader : String,
+                               townName : String,
+                               customerCode : String,
+                               customerName : String,
+                               productCategory : String,
+                               productGroup : String,
+                               sortOrder : String,
+                               sortColumn : String,
+                               topRec : Integer,
+                               skipRec : Integer)                       returns CustomerHLKPIResult;
 
-    action getCustomerHLKPIs(
-        salesGroup : String, 
-        kpiType : String, 
-        columnHeader : String, 
-        rowHeader : String, 
-        townName : String, 
-        customerCode : String, 
-        customerName : String, 
-        productCategory: String, 
-        productGroup: String, 
-        sortOrder : String, 
-        sortColumn : String, 
-        topRec : Integer, 
-        skipRec : Integer
-    ) returns CustomerHLKPIResult;
-    
     // Customer KPIs
-     function getCustomerUpcomingODKPIs(
-        salesGroup : String, 
-        customerCode : String, 
-        customerName : String
-    ) returns array of CollectionKPIResult;
+    function getCustomerUpcomingODKPIs(salesGroup : String,
+                                       customerCode : String,
+                                       customerName : String)           returns array of CollectionKPIResult;
 
-    function getCustomerCollectionKPIs(
-        salesGroup : String, 
-        customerCode : String, 
-        customerName : String
-    ) returns array of CollectionKPIResult;
+    function getCustomerCollectionKPIs(salesGroup : String,
+                                       customerCode : String,
+                                       customerName : String)           returns array of CollectionKPIResult;
 
-    function getCustomerValueKPIs(
-        salesGroup : String, 
-        customerCode : String, 
-        customerName : String
-    ) returns array of SaleValueKPIResult;
+    function getCustomerValueKPIs(salesGroup : String,
+                                  customerCode : String,
+                                  customerName : String)                returns array of SaleValueKPIResult;
 
-    function getCustomerVolumeKPIs(
-        salesGroup : String, 
-        customerCode : String, 
-        customerName : String
-    ) returns array of SaleValueKPIResult;
+    function getCustomerVolumeKPIs(salesGroup : String,
+                                   customerCode : String,
+                                   customerName : String)               returns array of SaleValueKPIResult;
 
-    function getCustomerParticipationKPIs(
-        salesGroup : String, 
-        customerCode : String, 
-        customerName : String
-    ) returns array of CollectionKPIResult;
+    function getCustomerParticipationKPIs(salesGroup : String,
+                                          customerCode : String,
+                                          customerName : String)        returns array of CollectionKPIResult;
 
-    function getCustomerFocusProductKPIs(
-        salesGroup : String, 
-        customerCode : String, 
-        customerName : String
-    ) returns array of CustomerFocusProductKPIResult;
+    function getCustomerFocusProductKPIs(salesGroup : String,
+                                         customerCode : String,
+                                         customerName : String)         returns array of CustomerFocusProductKPIResult;
 
-    function getCustomerCNEarnedKPIs(
-        salesGroup : String,
-        customerCode : String, 
-        customerName : String
-    ) returns array of CollectionKPIResult;
+    function getCustomerCNEarnedKPIs(salesGroup : String,
+                                     customerCode : String,
+                                     customerName : String)             returns array of CollectionKPIResult;
 
-    function getCustomerSchemeQualificationKPIs(
-        salesGroup : String, 
-        customerCode : String, 
-        customerName : String
-    ) returns array of CustomerSchemeQualificationKPIResult;
+    function getCustomerSchemeQualificationKPIs(salesGroup : String,
+                                                customerCode : String,
+                                                customerName : String)  returns array of CustomerSchemeQualificationKPIResult;
 
-    function getCustomerOSODKPIs(
-        salesGroup : String, 
-        customerCode : String, 
-        customerName : String
-    ) returns array of OSODKPIResult;
+    function getCustomerOSODKPIs(salesGroup : String,
+                                 customerCode : String,
+                                 customerName : String)                 returns array of OSODKPIResult;
 
-    function getCustomerVisitsKPIs(
-        salesGroup : String, 
-        customerCode : String, 
-        customerName : String
-    ) returns array of TotalVisitsKPIResult;
+    function getCustomerVisitsKPIs(salesGroup : String,
+                                   customerCode : String,
+                                   customerName : String)               returns array of TotalVisitsKPIResult;
 
-    function getCustomerDetails(
-        customerCode: String,
-        dateType: String,
-        startDate: String,
-        endDate: String
-    ) returns CustomerDetailsResult;
+    function getCustomerDetails(customerCode : String,
+                                dateType : String,
+                                startDate : String,
+                                endDate : String)                       returns CustomerDetailsResult;
 
-    function getAllCustomerListKPI(
-        salesGroup : String, 
-        customerCode : String, 
-        sortOrder : String, 
-        sortColumn : String, 
-        topRec : Integer, 
-        skipRec : Integer
-    ) returns AllCustomerListKPIResult;
+    function getAllCustomerListKPI(salesGroup : String,
+                                   customerCode : String,
+                                   sortOrder : String,
+                                   sortColumn : String,
+                                   topRec : Integer,
+                                   skipRec : Integer)                   returns AllCustomerListKPIResult;
 
     // Product KPIs
-    function getProductCategoryGroupList(
-        salesGroup: String
-    ) returns array of ProductCategoryGroupListResult;
+    function getProductCategoryGroupList(salesGroup : String)           returns array of ProductCategoryGroupListResult;
 
-    function getProductTotalKPIs(
-        salesGroup : String, 
-        productCategory : String, 
-        productGroup : String
-    ) returns ProductTotalKPIResult;
+    function getProductTotalKPIs(salesGroup : String,
+                                 productCategory : String,
+                                 productGroup : String)                 returns ProductTotalKPIResult;
 
-    function getProductKPIs(
-        salesGroup : String, 
-        productCategory : String, 
-        productGroup : String
-    ) returns array of ProductKPIResult;
-   
+    function getProductKPIs(salesGroup : String,
+                            productCategory : String,
+                            productGroup : String)                      returns array of ProductKPIResult;
+
     // Customer Product KPIs
-    function getCustomerProductValueKPIs(
-        salesGroup : String, 
-        customerCode : String, 
-        productCategory : String, 
-        productGroup : String
-    ) returns array of SaleValueKPIResult;
+    function getCustomerProductValueKPIs(salesGroup : String,
+                                         customerCode : String,
+                                         productCategory : String,
+                                         productGroup : String)         returns array of SaleValueKPIResult;
 
-        function getCustomerProductVolumeKPIs(
-            salesGroup : String, 
-            customerCode : String, 
-            productCategory : String, 
-            productGroup : String
-    ) returns array of SaleValueKPIResult;
+    function getCustomerProductVolumeKPIs(salesGroup : String,
+                                          customerCode : String,
+                                          productCategory : String,
+                                          productGroup : String)        returns array of SaleValueKPIResult;
 
-    function getCustomerProductParticipationKPIs(
-        salesGroup : String, 
-        customerCode : String, 
-        productCategory : String, 
-        productGroup : String
-    ) returns array of CustomerProductParticipationKPIResult;
+    function getCustomerProductParticipationKPIs(salesGroup : String,
+                                                 customerCode : String,
+                                                 productCategory : String,
+                                                 productGroup : String) returns array of CustomerProductParticipationKPIResult;
 }

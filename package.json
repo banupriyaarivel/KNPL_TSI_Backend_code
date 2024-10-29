@@ -14,18 +14,28 @@
     "@sap/hdbext": "^8.0.6",
     "@sap/xsenv": "^5.2.0",
     "@sap/xssec": "^3.2.17",
-    "express": "^4",
+    "axios": "^1.7.7",
+    "express": "^4.21.1",
     "hdb": "^0.18.3",
     "passport": "^0.5.3",
+    "sap-cf-axios": "^1.0.2",
+    "sap-cf-destconn": "^1.0.0",
     "sap-hdbext-promisfied": "^2.202203.1"
   },
   "devDependencies": {
     "@sap/hdi-deploy": "^4.3.0",
+    "@sap/ux-specification": "UI5-1.129",
+    "rimraf": "^5.0.5",
     "sqlite3": "^5.0.2"
   },
   "scripts": {
     "start": "npm rebuild && npx cds run",
-    "buildpush": "mbt build -p=cf && cf deploy mta_archives/TSI_1.0.0.mtar"
+    "buildpush": "mbt build -p=cf && cf deploy mta_archives/TSI_1.0.0.mtar",
+    "watch-knpl_tsi__ias": "cds watch --open knpl_tsi__ias/webapp/index.html?sap-ui-xx-viewCache=false",
+    "undeploy": "cf undeploy TSI --delete-services --delete-service-keys --delete-service-brokers",
+    "build": "rimraf resources mta_archives && mbt build --mtar archive",
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+    "watch-project1": "cds watch --open project1/webapp/index.html?sap-ui-xx-viewCache=false"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",
@@ -75,6 +85,12 @@
         "kind": "odata",
         "credentials": {
           "destination": "KNPL_TSI_USER_API_ACCESS"
+        }
+      },
+      "knpl-tsi-ias-api-access": {
+        "kind": "odata",
+        "credentials": {
+          "destination": "knpl_tsi_ias_url"
         }
       }
     }

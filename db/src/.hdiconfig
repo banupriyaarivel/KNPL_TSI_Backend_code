@@ -2,6 +2,10 @@
         {
             "minimum_feature_version": "1000",
             "file_suffixes": {
+                "cds": {
+                  "plugin_name": "com.sap.hana.di.cds"
+                },
+
                 "hdbapplicationtime": {
                     "plugin_name": "com.sap.hana.di.applicationtime"
                 },

@@ -10,3 +10,16 @@
         ]
     }
 }
+
+// {
+//   "role": {
+//     "name": "TSI::external_access",
+//     "schema_privileges": [
+//       {
+//         "privileges": [
+//           "SELECT", "INSERT", "UPDATE", "DELETE"
+//         ]
+//       }
+//     ]
+//   }
+// }

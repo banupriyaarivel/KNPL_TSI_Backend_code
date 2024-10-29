@@ -1,0 +1,92 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:f="sap.ui.layout.form"
+    xmlns:core="sap.ui.core"
+>
+    <Dialog
+        id="registerDialog"
+        title="Register User"
+        class="sapUiPopupWithPadding"
+    >
+        <HBox>
+            <f:SimpleForm
+                id="personalDetailsForm"
+                title="Personal Details"
+                editable="true"
+            >
+                <f:content>
+                    <Label text="ID" />
+                    <Input
+                        value="{newUser>/ID}"
+                        editable="false"
+                    />
+                    <Label
+                        text="First Name"
+                        required="true"
+                    />
+                    <Input value="{newUser>/FIRST_NAME}" />
+                    <Label
+                        text="Last Name"
+                        required="true"
+                    />
+                    <Input value="{newUser>/LAST_NAME}" />
+                    <Label
+                        text="Email"
+                        required="true"
+                    />
+                    <Input
+                        type="Email"
+                        value="{newUser>/EMAIL}"
+                    />
+                    <Label text="Mobile Number" />
+                    <Input
+                        type="Tel"
+                        value="{newUser>/MOBILE}"
+                        maxLength="10"
+                    />
+                </f:content>
+            </f:SimpleForm>
+
+            <!-- Employee Details Section -->
+            <f:SimpleForm
+                id="employeeDetailsForm"
+                title="Employee Details"
+                editable="true"
+            >
+                <f:content>
+                    <Label text="Employee Code" />
+                    <Input value="{newUser>/EMPLOYEE_CODE}" />
+                    <Label text="Designation" />
+                    <Input value="{newUser>/DESIGNATION}" />
+                    <Label text="Manager" />
+                    <Input value="{newUser>/MANAGER}" />
+                    <Label text="Zone" />
+                    <Input value="{newUSer>/ZONE}" />
+                    <Label text="Division Identifier" />
+                    <Input value="{newUSer>/DIVISION_IDENTIFIER}" />
+                    <Label text="Role" />
+                    <Input value="{newUSer>/ROLE}" />
+                    <Label text="Sales group Id" required="true" />
+                    <Input
+                        value="{newSalesGroup>/SalesGroup}"
+                        type="Number"
+                    />
+                </f:content>
+            </f:SimpleForm>
+        </HBox>
+
+        <!-- Dialog buttons -->
+        <beginButton>
+            <Button
+                text="Submit"
+                press="onSubmit"
+            />
+        </beginButton>
+        <endButton>
+            <Button
+                text="Cancel"
+                press="onCancel"
+            />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

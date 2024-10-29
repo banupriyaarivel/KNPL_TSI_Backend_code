@@ -40,11 +40,69 @@ const pragatiService =  require('./TSI-Pragati');
 const connectService = require('./TSI-DGA');
 const incentiveService = require('./TSI-Incentive');
 const roleService = require('./TSI-ASMRSM');
+const {findIASUser, createIASUser}  = require('./TSI-IAS')
 
 module.exports = cds.service.impl(function () {
 
     // Common Handler for Request Validation
     this.before('*', requestValidator);
+
+    // this.on('getUsers', getUsers);
+    // this.on('findUser', async ({data : {
+    //     email
+    // }}) => {
+    //     return await filterIASUsers(email)
+    // })
+
+
+    // this.on('findMyUser', async ({data : {
+    //     email
+    // }}) => {
+    //     return await filterMyIASUsers(email)
+    // })
+
+    this.on('createIAS', async ({data: {
+        familyName, givenName, email, phoneNumber, userName, active
+    }}) => {
+          const userExist = await findIASUser(email)
+          if(userExist.totalResults === 0){
+
+            const newUser = {
+                schemas: [
+                    "urn:ietf:params:scim:schemas:core:2.0:User",
+                    "urn:ietf:params:scim:schemas:extension:sap:2.0:User",
+                    "urn:ietf:params:scim:schemas:extension:enterprise:2.0:User"
+                ],
+                userName: userName,
+                name: {
+                  familyName: familyName,
+                  givenName: givenName
+                },
+                active: active,
+                emails: [
+                  {
+                    value: email
+                  }
+                ],
+                phoneNumbers: [
+                  {
+                    value: phoneNumber
+                  }
+                ]
+              };
+    
+              
+                const response = await createIASUser(newUser);
+                if(response.id){
+                    return {status:'Success', message: `User created successfully with this ID ${response.id}`};
+                }
+
+
+          }
+          return {status:'Warning', message: 'User allready exist'};
+           
+          
+    })
 
     // Summary-Home
     this.on(API_NAME.SALES_VALUES_KPI, async ({ data: { salesGroup } }) => {

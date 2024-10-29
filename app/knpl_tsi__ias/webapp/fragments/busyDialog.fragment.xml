@@ -1,0 +1,8 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<BusyDialog
+		title="Checking..."
+		text="Checking Email in IAS Users"
+		close="onDialogClosed" />
+</core:FragmentDefinition>

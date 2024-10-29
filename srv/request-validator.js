@@ -10,18 +10,18 @@ async function requestValidator(req) {
     console.log('reqObj===', reqObj);
     console.log('SSO User===', userInfo);
     if(reqObj && reqObj.salesGroup) {
-      const response = await getUserInfoByAPIAccess(userInfo.id);
+    //   const response = await getUserInfoByAPIAccess(userInfo.id);
     //    code for debug locally
-        // let response = {
-        //     "totalResults" : 1 ,
-        //     "resources" : [
-        //         {
-        //             "emails" :  [ {
-        //                 values : "jagjotsinghbakshi@nerolac.com"
-        //             }  ] 
-        //         }
-        //     ]
-        // } 
+        let response = {
+            "totalResults" : 1 ,
+            "resources" : [
+                {
+                    "emails" :  [ {
+                        values : "jagjotsinghbakshi@nerolac.com"
+                    }  ] 
+                }
+            ]
+        } 
         if (response && response.totalResults) {
             const actualEmail = response.resources[0]?.emails[0]?.value || '';
             console.log('Actual email===', actualEmail);

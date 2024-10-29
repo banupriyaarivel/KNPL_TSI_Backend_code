@@ -262,3 +262,58 @@ CALL "TSI_HDI_TSI_DB_DEPLOYER_1"."OSODKPI"(
 	CUSTOMERCODE => ''/*<NVARCHAR(500000)>*/,
 	CUSTOMERNAME => ''/*<NVARCHAR(255)>*/
 )  
+
+
+
+###
+
+GET http://localhost:4004/v2/tsi/User 
+
+
+
+###
+POST http://localhost:4004/tsi/getUsers
+Content-Type: application/json
+
+
+
+
+###
+POST http://localhost:4004/tsi/findUser
+Content-Type: application/json
+
+{
+ "email":"grcteam@nerolac.com"
+}
+
+
+
+
+
+
+
+###
+POST http://localhost:4004/tsi/createIAS
+Content-Type: application/json
+
+
+{
+	"familyName":"posa",
+	"givenName":"arjun",
+	"userName": "posa arjun",
+	"active":true,
+	"email":"asdf@asdf.com",
+	"phoneNumber":"6303648942"
+}
+
+
+
+###
+DELETE http://localhost:8080/tsi/User(84)
+
+###
+DELETE http://localhost:8080/tsi/UserSalesGroup(52)
+
+
+###
+DELETE http://localhost:8080/tsi/MapUserRole(822)

@@ -1,0 +1,144 @@
+{
+  "_version": "1.65.0",
+  "sap.app": {
+    "id": "knpltsiiasuser.knpltsiias",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:basic",
+      "version": "1.15.2",
+      "toolsId": "1651ea07-b6fe-40ab-885c-e452efca0619"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/tsi/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.129.2",
+      "libs": {
+				"sap.f": {},
+				"sap.m": {},
+				"sap.ui.core": {}
+			}
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "knpltsiiasuser.knpltsiias.i18n.i18n"
+        }
+      },
+      "USERS_DATA": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    },
+    "routing": {
+      "config": {
+        "routerClass": "sap.f.routing.Router",
+				"type": "View",
+				"viewType": "XML",
+				"path": "knpltsiiasuser.knpltsiias.view",
+				"controlId": "fcl",
+				"transition": "slide",
+				"bypassed": {
+				},
+				"async": true
+      },
+      "routes": [
+        {
+					"pattern": ":layout:",
+					"name": "list",
+					"target": [
+						"list"
+					]
+				},
+        {
+					"pattern": "detail/{userID}/{layout}",
+					"name": "detail",
+					"target": [
+						"list",
+						"detail"
+					]
+				},
+        {
+					"pattern": "detailGroup/{userID}/{groups}/{layout}",
+					"name": "detailGroup",
+					"target": [
+						"list",
+						"detail",
+						"detailGroup"
+					]
+				}
+      ],
+      "targets": {
+        "list": {
+					"name": "List",
+					"controlAggregation": "beginColumnPages"
+				},
+        "detail": {
+					"name": "Detail",
+					"controlAggregation": "midColumnPages"
+				},
+        "detailGroup": {
+					"name": "Groups",
+					"controlAggregation": "endColumnPages"
+				}
+      }
+    },
+    "rootView": {
+      "viewName": "knpltsiiasuser.knpltsiias.view.FlexibleColumnLayout",
+      "type": "XML",
+			"async": true,
+			"id": "fcl"
+    }
+  }
+}
