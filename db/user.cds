@@ -17,8 +17,19 @@ entity USER {
         MOBILE              : String(15);
         DIVISION_IDENTIFIER : String(10);
         IS_ACTIVATED        : hana.TINYINT;
-        SALES_GROUPS        : Association to many USER_SALES_GROUP_MAP
+
+
+        SALES_GROUPS        : Composition of many USER_SALES_GROUP_MAP
                                   on SALES_GROUPS.USER_ID = $self.ID;
+
+        ROLE                : Composition of many MAP_USER_ROLE
+                                  on ROLE.USER_ID = $self.ID;
+
+        ASM                 : Composition of many ZEMP_MASTER_ECC
+                                  on ASM.EMAIL_ASM = $self.EMAIL;
+
+        TSI                 : Composition of many ZEMP_MASTER_ECC
+                                  on TSI.EMAIL_TSI = $self.EMAIL;
 }
 
 @cds.persistence.exists
@@ -28,7 +39,7 @@ entity USER_SALES_GROUP_MAP {
         SALES_GROUP : String(5);
         IS_ARCHIVED : hana.TINYINT;
         CREATED_AT  : DateTime;
-        UPDATED_AT  : DateTime
+        UPDATED_AT  : DateTime;
 
 
 }
@@ -42,5 +53,32 @@ entity MAP_USER_ROLE {
         CREATED_AT  : DateTime;
         CREATED_BY  : Integer;
         UPDATED_AT  : DateTime;
-        UPDATED_BY  : Integer
+        UPDATED_BY  : Integer;
+}
+
+@cds.persistence.Table
+define entity ZEMP_MASTER_ECC {
+    key MANDT          : String(3) default '300';
+    key TOWN           : String(40) default '0000';
+        VWERK          : String(4);
+        RSMID          : String(12);
+        RSMBP          : String(10);
+        RSMNAME        : String(40);
+        RSMUNIQUE_SG   : String(3);
+        RSMUNIQUE_DEPO : String(4);
+    key ASMID          : String(12);
+    key ASMBP          : String(10);
+        ASMUNIQUE      : String(4);
+        ASMNAME        : String(40);
+        ASMUNIQUE_SG   : String(3);
+        EMAIL_ASM      : String(241);
+        ASM_PHN_NO     : String(10);
+    key SALESMANID     : String(12);
+    key TSIBP          : String(10);
+        TSINAME        : String(40);
+        EMAIL_TSI      : String(241);
+        TSI_PHN_NO     : String(10);
+        DIVISION       : String(2);
+        USNAM          : String(12);
+        TIMESTAMP      : Decimal(15, 0);
 }

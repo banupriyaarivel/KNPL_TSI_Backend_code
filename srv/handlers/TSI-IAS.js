@@ -1,6 +1,11 @@
 // url : - az8wsv0bp.accounts.ondemand.com\
 // endPoint - /scim/Users
 
+// test IAS
+//  url : - a176c029w.trial-accounts.ondemand.com
+// endpoint : /scim/Users
+// auntheticate : - Basic MzIxMjk3MDktMGE3Ni00OGEzLTg3ZmItOTAyOGJkMmM4NDVhOmNCaGF1ZV1jLlZWT21sSy9FMnVASE9Gemk6TGRvV2wtNw==
+
 const https = require('https');
 const querystring = require('querystring');
 
@@ -82,8 +87,7 @@ function filterIASUsers(email) {
 }
 
 
-// train IAS account
-
+// trail IAS account
 function findIASUser(email) {
   return new Promise((resolve, reject) => {
     const filter = `emails.value eq "${email}"`;
@@ -96,6 +100,7 @@ function findIASUser(email) {
         'Authorization': 'Basic QWxlcnRiYXNpc0BuZXJvbGFjLmNvbTpEaWdpdGFsQDEyMw=='
       }
     };
+    console.log(options)
 
     const request = https.request(options, (response) => {
       let data = '';
@@ -128,7 +133,8 @@ function createIASUser(newUser) {
       path: `/scim/Users`,
       method: 'POST',
       headers: {
-        'Authorization': 'Basic QWxlcnRiYXNpc0BuZXJvbGFjLmNvbTpEaWdpdGFsQDEyMw=='
+        'Authorization': 'Basic QWxlcnRiYXNpc0BuZXJvbGFjLmNvbTpEaWdpdGFsQDEyMw==',
+        'Content-Type': 'application/scim+json'
       }
     };
 

@@ -245,7 +245,6 @@
       "schema": "SAPGNP"
     }
   },
-
   "MSTR_ROLES": {
     "target": {
       "object": "MSTR_ROLES",
@@ -258,7 +257,6 @@
       "schema": "DB_HDI_DB_1"
     }
   },
-
   "DGA_MAP_DGA_CONTRACTORS": {
     "target": {
       "object": "MAP_DGA_CONTRACTORS",
@@ -346,6 +344,12 @@
   "DGA_MSTR_PRODUCT_SHADES": {
     "target": {
       "object": "MSTR_PRODUCT_SHADES",
+      "schema": "SAPGNP"
+    }
+  },
+  "ZEMP_MASTER_ECC_org": {
+    "target": {
+      "object": "ZEMP_MASTER_ECC",
       "schema": "SAPGNP"
     }
   }

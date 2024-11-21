@@ -267,7 +267,7 @@ CALL "TSI_HDI_TSI_DB_DEPLOYER_1"."OSODKPI"(
 
 ###
 
-GET http://localhost:4004/v2/tsi/User 
+GET http://localhost:4004/v2/tsi/User(65)?$expand=ROLE,ASM,TSI,SALES_GROUPS
 
 
 
@@ -298,12 +298,13 @@ Content-Type: application/json
 
 
 {
-	"familyName":"posa",
-	"givenName":"arjun",
-	"userName": "posa arjun",
+	"familyName":"test5",
+	"givenName":"test",
 	"active":true,
-	"email":"asdf@asdf.com",
-	"phoneNumber":"6303648942"
+	"email":"test5@gmail.com",
+	"phoneNumber":null,
+	"password":"Test5@2024",
+	"userName":""
 }
 
 
@@ -317,3 +318,28 @@ DELETE http://localhost:8080/tsi/UserSalesGroup(52)
 
 ###
 DELETE http://localhost:8080/tsi/MapUserRole(822)
+
+
+###
+GET http://localhost:4004/tsi/ZempMasterEcc HTTP/1.1
+
+
+###
+POST http://localhost:4004/tsi/ZempMasterEcc HTTP/1.1
+Content-Type: application/json
+
+{
+  "ASMID": "ASM002",
+  "ASMBP": "0000002",
+  "ASMUNIQUE": "D001",
+  "ASMNAME": "kumar pankaj",
+  "ASMUNIQUE_SG": "113",
+  "EMAIL_ASM": "kumarpankaj@nerolac.com",
+  "ASM_PHN_NO": "1234567890",
+
+  "SALESMANID": "TSI002",
+  "TSIBP": "TSI0000002",
+  "TSINAME": "Girish Kumar",
+  "EMAIL_TSI": "girish.kumar@extentia.com",
+  "TSI_PHN_NO": "1234567890"
+}

@@ -2,7 +2,8 @@
 using {
     USER,
     USER_SALES_GROUP_MAP,
-    MAP_USER_ROLE
+    MAP_USER_ROLE,
+    ZEMP_MASTER_ECC
 } from '../db/user';
 
 @path: '/tsi'
@@ -11,6 +12,7 @@ service TSIService {
     entity User           as projection on USER;
     entity UserSalesGroup as projection on USER_SALES_GROUP_MAP;
     entity MapUserRole as projection on MAP_USER_ROLE;
+    entity ZempMasterEcc as projection on  ZEMP_MASTER_ECC;
     
     // action   getUsers()                                                 returns String;
     // action   findUser(email : String)                                   returns String;
@@ -22,7 +24,8 @@ service TSIService {
         email : String,
         phoneNumber : String,
         userName : String,
-        active : Boolean
+        active : Boolean,
+        password:String
         ) returns String;
 
     define type GeneralValueType {
