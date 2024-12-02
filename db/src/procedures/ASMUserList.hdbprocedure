@@ -16,48 +16,24 @@ BEGIN
 
     IF rsmCnt > 0 THEN
         IF searchText IS NULL THEN 
-
-            SELECT ECC."EMAIL_ASM" AS "EMAIL", ECC."ASMNAME" AS "NAME", 
-            STRING_AGG(PCUSTOMER."SALES_GRP", ',') AS "SALES_GROUP",
+            SELECT "EMAIL_ASM" AS "EMAIL", "ASMNAME" AS "NAME", 
+            STRING_AGG("VKGRP", ',') AS "SALES_GROUP",
             false AS "IS_SELECTED", true AS "IS_VISIBLE"
-            FROM "DGA_ZEMP_MASTER_ECC" AS ECC
-            JOIN ( SELECT DISTINCT "SALES_GRP"
-                    FROM "/BI0/PCUSTOMER" ) AS PCUSTOMER ON  ECC."VKGRP" = PCUSTOMER."SALES_GRP"
-             JOIN "/BI0/SSALES_GRP" AS SALES    ON SALES."SALES_GRP" = PCUSTOMER."SALES_GRP"
+            FROM "DGA_ZEMP_MASTER_ECC"
             WHERE UPPER("EMAIL_DSM") = :upperEmail AND "EMAIL_ASM" != ''
-            AND ECC."VKGRP" != '' AND ECC."VKGRP" != 'N.A' AND ECC."VKGRP" NOT LIKE '%[a-zA-Z]%'
-            GROUP BY ECC."EMAIL_ASM", ECC."ASMNAME" ORDER BY ECC."ASMNAME" ASC;
-
-            -- SELECT "EMAIL_ASM" AS "EMAIL", "ASMNAME" AS "NAME", 
-            -- STRING_AGG("VKGRP", ',') AS "SALES_GROUP",
-            -- false AS "IS_SELECTED", true AS "IS_VISIBLE"
-            -- FROM "DGA_ZEMP_MASTER_ECC" 
-            -- WHERE UPPER("EMAIL_DSM") = :upperEmail AND "EMAIL_ASM" != ''
-            -- AND "VKGRP" != '' AND "VKGRP" != 'N.A'
-            -- GROUP BY "EMAIL_ASM", "ASMNAME" ORDER BY "ASMNAME" ASC;
+            AND "VKGRP" != '' AND "VKGRP" != 'N.A'
+            GROUP BY "EMAIL_ASM", "ASMNAME" ORDER BY "ASMNAME" ASC;
         ELSE 
             searchText := '%' || UPPER(searchText) || '%';
-
-            SELECT ECC."EMAIL_ASM" AS "EMAIL", ECC."ASMNAME" AS "NAME",
-            STRING_AGG(PCUSTOMER."SALES_GRP", ',') AS "SALES_GROUP", 
-            false AS "IS_SELECTED", true AS "IS_VISIBLE"
-            FROM "DGA_ZEMP_MASTER_ECC" AS ECC
-            JOIN ( SELECT DISTINCT "SALES_GRP"
-                    FROM "/BI0/PCUSTOMER" ) AS PCUSTOMER ON  ECC."VKGRP" = PCUSTOMER."SALES_GRP"
-            JOIN "/BI0/SSALES_GRP" AS SALES    ON SALES."SALES_GRP" = PCUSTOMER."SALES_GRP"
-            WHERE UPPER(ECC."EMAIL_DSM") = :upperEmail AND ECC."EMAIL_ASM" != ''
-            AND ECC."VKGRP" != '' AND ECC."VKGRP" != 'N.A'
-            AND (UPPER(ECC."EMAIL_ASM") LIKE searchText OR UPPER(ECC."ASMNAME") LIKE searchText)
-            GROUP BY ECC."EMAIL_ASM", ECC."ASMNAME" ORDER BY ECC."ASMNAME" ASC;
             
-            -- SELECT "EMAIL_ASM" AS "EMAIL", "ASMNAME" AS "NAME",
-            -- STRING_AGG("VKGRP", ',') AS "SALES_GROUP", 
-            -- false AS "IS_SELECTED", true AS "IS_VISIBLE"
-            -- FROM "DGA_ZEMP_MASTER_ECC"
-            -- WHERE UPPER("EMAIL_DSM") = :upperEmail AND "EMAIL_ASM" != ''
-            -- AND "VKGRP" != '' AND "VKGRP" != 'N.A'
-            -- AND (UPPER("EMAIL_ASM") LIKE searchText OR UPPER("ASMNAME") LIKE searchText)
-            -- GROUP BY "EMAIL_ASM", "ASMNAME" ORDER BY "ASMNAME" ASC;            
+            SELECT "EMAIL_ASM" AS "EMAIL", "ASMNAME" AS "NAME",
+            STRING_AGG("VKGRP", ',') AS "SALES_GROUP", 
+            false AS "IS_SELECTED", true AS "IS_VISIBLE"
+            FROM "DGA_ZEMP_MASTER_ECC"
+            WHERE UPPER("EMAIL_DSM") = :upperEmail AND "EMAIL_ASM" != ''
+            AND "VKGRP" != '' AND "VKGRP" != 'N.A'
+            AND (UPPER("EMAIL_ASM") LIKE searchText OR UPPER("ASMNAME") LIKE searchText)
+            GROUP BY "EMAIL_ASM", "ASMNAME" ORDER BY "ASMNAME" ASC;            
         END IF;
     END IF;
 END;

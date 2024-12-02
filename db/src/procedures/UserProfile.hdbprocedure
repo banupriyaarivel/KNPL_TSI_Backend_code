@@ -79,48 +79,24 @@ BEGIN
 
         IF appVersion >= currentAppVersion THEN
             IF tsiCnt > 0 THEN 
-
-                SELECT DISTINCT USERT."FIRST_NAME", USERT."LAST_NAME", USERT."EMAIL", USERT."PROFILE_IMAGE", MUR."ROLE_ID",
-                STRING_AGG(PCUSTOMER."SALES_GRP", ',') AS "SALES_GROUP",
+                SELECT DISTINCT USERT."FIRST_NAME", USERT."LAST_NAME", USERT."EMAIL", USERT."PROFILE_IMAGE", MUR."ROLE_ID", 
+                STRING_AGG(USER_SALES_GROUP_MAP."SALES_GROUP", ',') AS "SALES_GROUP",
                 NULL AS "ERROR", NULL AS "APP_URL"
                 FROM "USER" AS USERT
                 JOIN "USER_SALES_GROUP_MAP" AS USER_SALES_GROUP_MAP ON USERT."ID" = USER_SALES_GROUP_MAP."USER_ID" AND USER_SALES_GROUP_MAP."IS_ARCHIVED" = 0
-                -- JOIN "/BI0/PCUSTOMER" AS PCUSTOMER ON USER_SALES_GROUP_MAP."SALES_GROUP" = PCUSTOMER."SALES_GRP"
-                JOIN ( SELECT DISTINCT "SALES_GRP"
-                    FROM "/BI0/PCUSTOMER" ) AS PCUSTOMER ON  USER_SALES_GROUP_MAP."SALES_GROUP" = PCUSTOMER."SALES_GRP"
-                JOIN "/BI0/SSALES_GRP" AS SALES ON SALES."SALES_GRP" = PCUSTOMER."SALES_GRP"
                 JOIN "MAP_USER_ROLE" AS MUR ON USERT."ID" = MUR."USER_ID"
-                WHERE USERT."ID" = :userId
-                GROUP BY USERT."FIRST_NAME", USERT."LAST_NAME",USERT."EMAIL",
+                WHERE USERT."ID" = :userId 
+                GROUP BY USERT."FIRST_NAME", USERT."LAST_NAME",USERT."EMAIL", 
                 USERT."PROFILE_IMAGE", MUR."ROLE_ID";
-
-                -- SELECT DISTINCT USERT."FIRST_NAME", USERT."LAST_NAME", USERT."EMAIL", USERT."PROFILE_IMAGE", MUR."ROLE_ID", 
-                -- STRING_AGG(USER_SALES_GROUP_MAP."SALES_GROUP", ',') AS "SALES_GROUP",
-                -- NULL AS "ERROR", NULL AS "APP_URL"
-                -- FROM "USER" AS USERT
-                -- JOIN "USER_SALES_GROUP_MAP" AS USER_SALES_GROUP_MAP ON USERT."ID" = USER_SALES_GROUP_MAP."USER_ID" AND USER_SALES_GROUP_MAP."IS_ARCHIVED" = 0
-                -- JOIN "MAP_USER_ROLE" AS MUR ON USERT."ID" = MUR."USER_ID"
-                -- WHERE USERT."ID" = :userId 
-                -- GROUP BY USERT."FIRST_NAME", USERT."LAST_NAME",USERT."EMAIL", 
-                -- USERT."PROFILE_IMAGE", MUR."ROLE_ID";
             ELSE 
-
                 SELECT DISTINCT USERT."FIRST_NAME", USERT."LAST_NAME", USERT."EMAIL", 
                 USERT."PROFILE_IMAGE", MUR."ROLE_ID",
                 (
                     CASE WHEN MUR."ROLE_ID" = 1 THEN 
-                       (SELECT STRING_AGG(PCUSTOMER."SALES_GRP", ',') AS "SALES_GROUP"
-                        FROM "DGA_ZEMP_MASTER_ECC" AS ECC
-                        JOIN ( SELECT DISTINCT "SALES_GRP"
-                               FROM "/BI0/PCUSTOMER" ) AS PCUSTOMER ON  ECC."VKGRP" = PCUSTOMER."SALES_GRP"
-                        JOIN "/BI0/SSALES_GRP" AS SALES ON SALES."SALES_GRP" = PCUSTOMER."SALES_GRP"      
+                        (SELECT STRING_AGG("VKGRP", ',') AS "SALES_GROUP" FROM "DGA_ZEMP_MASTER_ECC"
                         WHERE UPPER("EMAIL_DSM") = :upperEmail) 
                     ELSE 
-                        (SELECT STRING_AGG(PCUSTOMER."SALES_GRP", ',') AS "SALES_GROUP"
-                        FROM "DGA_ZEMP_MASTER_ECC" AS ECC
-                        JOIN ( SELECT DISTINCT "SALES_GRP"
-                               FROM "/BI0/PCUSTOMER" ) AS PCUSTOMER ON  ECC."VKGRP" = PCUSTOMER."SALES_GRP"
-                        JOIN "/BI0/SSALES_GRP" AS SALES ON SALES."SALES_GRP" = PCUSTOMER."SALES_GRP"
+                        (SELECT STRING_AGG("VKGRP", ',') AS "SALES_GROUP" FROM "DGA_ZEMP_MASTER_ECC"
                         WHERE UPPER("EMAIL_ASM") = :upperEmail)
                     END
                 ) AS "SALES_GROUP",
@@ -129,25 +105,7 @@ BEGIN
                 JOIN "MAP_USER_ROLE" AS MUR ON USERT."ID" = MUR."USER_ID"
                 WHERE USERT."ID" = :userId 
                 GROUP BY USERT."FIRST_NAME", USERT."LAST_NAME",USERT."EMAIL", 
-                USERT."PROFILE_IMAGE", MUR."ROLE_ID"; 
-
-                -- SELECT DISTINCT USERT."FIRST_NAME", USERT."LAST_NAME", USERT."EMAIL", 
-                -- USERT."PROFILE_IMAGE", MUR."ROLE_ID",
-                -- (
-                --     CASE WHEN MUR."ROLE_ID" = 1 THEN 
-                --         (SELECT STRING_AGG("VKGRP", ',') AS "SALES_GROUP" FROM "DGA_ZEMP_MASTER_ECC"
-                --         WHERE UPPER("EMAIL_DSM") = :upperEmail) 
-                --     ELSE 
-                --         (SELECT STRING_AGG("VKGRP", ',') AS "SALES_GROUP" FROM "DGA_ZEMP_MASTER_ECC"
-                --         WHERE UPPER("EMAIL_ASM") = :upperEmail)
-                --     END
-                -- ) AS "SALES_GROUP",
-                -- NULL AS "ERROR", NULL AS "APP_URL"
-                -- FROM "USER" AS USERT 
-                -- JOIN "MAP_USER_ROLE" AS MUR ON USERT."ID" = MUR."USER_ID"
-                -- WHERE USERT."ID" = :userId 
-                -- GROUP BY USERT."FIRST_NAME", USERT."LAST_NAME",USERT."EMAIL", 
-                -- USERT."PROFILE_IMAGE", MUR."ROLE_ID";            
+                USERT."PROFILE_IMAGE", MUR."ROLE_ID";            
             END IF;
 
             SELECT COUNT("ID") INTO tsiCnt FROM "USER" 

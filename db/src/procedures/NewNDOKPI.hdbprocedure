@@ -13,89 +13,204 @@ BEGIN
    DECLARE ytdEndDate NVARCHAR(10) := "GetYTD"(1, 0);
 
    SELECT 
-        (
-            SELECT COUNT(DISTINCT PCUSTOMER.CUSTOMER) FROM "/BIC/FCC_NSALE" FCC_NSALE
-            JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
-            AND SSALES_GRP.SALES_GRP IN (
-                SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
-            ) 
-            JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
-            JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
-            AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008')
-            WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
-            AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) AND SID_0COMP_CODE IN (2)
-            AND FCC_NSALE."SID_0FISCVARNT" IN (9)
-        ) "Total-NDO",
+        -- (
+        --     SELECT COUNT(DISTINCT PCUSTOMER.CUSTOMER) FROM "/BIC/FCC_NSALE" FCC_NSALE
+        --     JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
+        --     AND SSALES_GRP.SALES_GRP IN (
+        --         SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
+        --     ) 
+        --     JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
+        --     JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
+        --     AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008')
+        --     WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
+        --     AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) AND SID_0COMP_CODE IN (2)
+        --     AND FCC_NSALE."SID_0FISCVARNT" IN (9)
+        -- ) "Total-NDO",
 
         (
-            SELECT COUNT(DISTINCT PCUSTOMER.CUSTOMER) FROM "/BIC/FCC_NSALE" FCC_NSALE
-            JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
-            AND SSALES_GRP.SALES_GRP IN (
-                SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
-            ) 
-            JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
-            JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
-            AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008') AND "/BIC/CI_NETVAL" > 0
-            WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
-            AND TO_DATE("SID_0CALDAY") BETWEEN todayDate AND todayDate
-            AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) AND SID_0COMP_CODE IN (2)
-            AND FCC_NSALE."SID_0FISCVARNT" IN (9)
+            SELECT COUNT(DISTINCT customer) FROM( 
+                 SELECT PCUSTOMER."/BIC/CI_PRNCUS" as customer
+                 FROM "/BIC/FCC_NSALE" FCC_NSALE
+                    JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
+                    JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
+                    JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
+                    AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008','G011') 
+                    AND PCUSTOMER."SALES_GRP" IN ( SELECT "RESULT" FROM "SplitCommaString"(:salesGroup) ) 
+                    WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
+                        AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) 
+                        AND SID_0COMP_CODE IN (2)
+                AND FCC_NSALE."SID_0FISCVARNT" IN (9) 
+                GROUP BY PCUSTOMER."/BIC/CI_PRNCUS"
+             ) 
+        ) "Total-NDO",
+
+        -- (
+        --     SELECT COUNT(DISTINCT PCUSTOMER.CUSTOMER) FROM "/BIC/FCC_NSALE" FCC_NSALE
+        --     JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
+        --     AND SSALES_GRP.SALES_GRP IN (
+        --         SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
+        --     ) 
+        --     JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
+        --     JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
+        --     AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008') AND "/BIC/CI_NETVAL" > 0
+        --     WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
+        --     AND TO_DATE("SID_0CALDAY") BETWEEN todayDate AND todayDate
+        --     AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) AND SID_0COMP_CODE IN (2)
+        --     AND FCC_NSALE."SID_0FISCVARNT" IN (9)
+        -- ) "Billed-Today",
+
+        (
+            SELECT COUNT(DISTINCT customer) FROM( 
+                 SELECT PCUSTOMER."/BIC/CI_PRNCUS" as customer, SUM("/BIC/CI_NETVAL") as netvalue 
+                 FROM "/BIC/FCC_NSALE" FCC_NSALE
+                    JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
+                    JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
+                    JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
+                    AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008','G011') 
+                    -- AND "/BIC/CI_NETVAL" > 0
+                    AND PCUSTOMER."SALES_GRP" IN ( SELECT "RESULT" FROM "SplitCommaString"(:salesGroup) ) 
+                    WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
+                        AND TO_DATE("SID_0CALDAY") BETWEEN todayDate AND todayDate
+                        AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) 
+                        AND SID_0COMP_CODE IN (2)
+                AND FCC_NSALE."SID_0FISCVARNT" IN (9) 
+                GROUP BY PCUSTOMER."/BIC/CI_PRNCUS" 
+             ) WHERE netvalue > 0
         ) "Billed-Today",
+
+        -- (
+        --     SELECT COUNT(DISTINCT PCUSTOMER.CUSTOMER) FROM "/BIC/FCC_NSALE" FCC_NSALE
+        --     JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
+        --     AND SSALES_GRP.SALES_GRP IN (
+        --         SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
+        --     ) 
+        --     JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
+        --     JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
+        --     AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008') AND "/BIC/CI_NETVAL" > 0
+        --     WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
+        --     AND TO_DATE("SID_0CALDAY") BETWEEN yesterdayDate AND yesterdayDate
+        --     AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) AND SID_0COMP_CODE IN (2)
+        --     AND FCC_NSALE."SID_0FISCVARNT" IN (9)
+        -- ) "Billed-Yesterday",
+
         (
-            SELECT COUNT(DISTINCT PCUSTOMER.CUSTOMER) FROM "/BIC/FCC_NSALE" FCC_NSALE
-            JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
-            AND SSALES_GRP.SALES_GRP IN (
-                SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
-            ) 
-            JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
-            JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
-            AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008') AND "/BIC/CI_NETVAL" > 0
-            WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
-            AND TO_DATE("SID_0CALDAY") BETWEEN yesterdayDate AND yesterdayDate
-            AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) AND SID_0COMP_CODE IN (2)
-            AND FCC_NSALE."SID_0FISCVARNT" IN (9)
+            SELECT COUNT(DISTINCT customer) FROM( 
+                SELECT PCUSTOMER."/BIC/CI_PRNCUS" as customer, SUM("/BIC/CI_NETVAL") as netvalue 
+                FROM "/BIC/FCC_NSALE" FCC_NSALE
+                   JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
+                   JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
+                   JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
+                   AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008','G011') 
+                   -- AND "/BIC/CI_NETVAL" > 0
+                   AND PCUSTOMER."SALES_GRP" IN ( SELECT "RESULT" FROM "SplitCommaString"(:salesGroup) ) 
+                   WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
+                       AND TO_DATE("SID_0CALDAY") BETWEEN yesterdayDate AND yesterdayDate
+                       AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) 
+                       AND SID_0COMP_CODE IN (2)
+               AND FCC_NSALE."SID_0FISCVARNT" IN (9) 
+               GROUP BY PCUSTOMER."/BIC/CI_PRNCUS"
+            ) WHERE netvalue > 0
         ) "Billed-Yesterday",
+
+        -- (
+        --     SELECT COUNT(DISTINCT PCUSTOMER.CUSTOMER) FROM "/BIC/FCC_NSALE" FCC_NSALE
+        --     JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
+        --     AND SSALES_GRP.SALES_GRP IN (
+        --         SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
+        --     ) 
+        --     JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
+        --     JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
+        --     AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008') AND "/BIC/CI_NETVAL" > 0
+        --     WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
+        --     AND TO_DATE("SID_0CALDAY") BETWEEN mtdTillStartDate AND mtdTillEndDate
+        --     AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) AND SID_0COMP_CODE IN (2)
+        --     AND FCC_NSALE."SID_0FISCVARNT" IN (9)
+        -- ) "Billed-MTD*",
+
         (
-            SELECT COUNT(DISTINCT PCUSTOMER.CUSTOMER) FROM "/BIC/FCC_NSALE" FCC_NSALE
-            JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
-            AND SSALES_GRP.SALES_GRP IN (
-                SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
-            ) 
-            JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
-            JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
-            AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008') AND "/BIC/CI_NETVAL" > 0
-            WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
-            AND TO_DATE("SID_0CALDAY") BETWEEN mtdTillStartDate AND mtdTillEndDate
-            AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) AND SID_0COMP_CODE IN (2)
-            AND FCC_NSALE."SID_0FISCVARNT" IN (9)
+            SELECT COUNT(DISTINCT customer) FROM( 
+                 SELECT PCUSTOMER."/BIC/CI_PRNCUS" as customer, SUM("/BIC/CI_NETVAL") as netvalue 
+                 FROM "/BIC/FCC_NSALE" FCC_NSALE
+                    JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
+                    JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
+                    JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
+                    AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008','G011') 
+                    -- AND "/BIC/CI_NETVAL" > 0
+                    AND PCUSTOMER."SALES_GRP" IN ( SELECT "RESULT" FROM "SplitCommaString"(:salesGroup) ) 
+                    WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
+                        AND TO_DATE("SID_0CALDAY") BETWEEN mtdTillStartDate AND mtdTillEndDate
+                        AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) 
+                        AND SID_0COMP_CODE IN (2)
+                AND FCC_NSALE."SID_0FISCVARNT" IN (9) 
+                GROUP BY PCUSTOMER."/BIC/CI_PRNCUS" 
+             ) WHERE netvalue > 0
         ) "Billed-MTD*",
+
+        -- (
+        --     SELECT COUNT(DISTINCT PCUSTOMER.CUSTOMER) FROM "/BIC/FCC_NSALE" FCC_NSALE
+        --     JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
+        --     AND SSALES_GRP.SALES_GRP IN (
+        --         SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
+        --     ) 
+        --     JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
+        --     JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
+        --     AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008') AND "/BIC/CI_NETVAL" > 0
+        --     WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
+        --     AND TO_DATE("SID_0CALDAY") BETWEEN mtdStartDate AND mtdEndDate
+        --     AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) AND SID_0COMP_CODE IN (2)
+        --     AND FCC_NSALE."SID_0FISCVARNT" IN (9)
+        -- ) "Billed-MTD",
+
         (
-            SELECT COUNT(DISTINCT PCUSTOMER.CUSTOMER) FROM "/BIC/FCC_NSALE" FCC_NSALE
-            JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
-            AND SSALES_GRP.SALES_GRP IN (
-                SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
-            ) 
-            JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
-            JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
-            AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008') AND "/BIC/CI_NETVAL" > 0
-            WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
-            AND TO_DATE("SID_0CALDAY") BETWEEN mtdStartDate AND mtdEndDate
-            AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) AND SID_0COMP_CODE IN (2)
-            AND FCC_NSALE."SID_0FISCVARNT" IN (9)
+            SELECT COUNT(DISTINCT customer) FROM( 
+                SELECT PCUSTOMER."/BIC/CI_PRNCUS" as customer, SUM("/BIC/CI_NETVAL") as netvalue 
+                FROM "/BIC/FCC_NSALE" FCC_NSALE
+                   JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
+                   JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
+                   JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
+                   AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008','G011') 
+                   -- AND "/BIC/CI_NETVAL" > 0
+                   AND PCUSTOMER."SALES_GRP" IN ( SELECT "RESULT" FROM "SplitCommaString"(:salesGroup) ) 
+                   WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
+                       AND TO_DATE("SID_0CALDAY") BETWEEN mtdStartDate AND mtdEndDate
+                       AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) 
+                       AND SID_0COMP_CODE IN (2)
+               AND FCC_NSALE."SID_0FISCVARNT" IN (9) 
+               GROUP BY PCUSTOMER."/BIC/CI_PRNCUS"
+            ) WHERE netvalue > 0
         ) "Billed-MTD",
+
+        -- (
+        --     SELECT COUNT(DISTINCT PCUSTOMER.CUSTOMER) FROM "/BIC/FCC_NSALE" FCC_NSALE
+        --     JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
+        --     AND SSALES_GRP.SALES_GRP IN (
+        --         SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
+        --     ) 
+        --     JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
+        --     JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
+        --     AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008') AND "/BIC/CI_NETVAL" > 0
+        --     WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
+        --     AND TO_DATE("SID_0CALDAY") BETWEEN ytdStartDate AND ytdEndDate
+        --     AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) AND SID_0COMP_CODE IN (2)
+        --     AND FCC_NSALE."SID_0FISCVARNT" IN (9)
+        -- ) "Billed-YTD"
         (
-            SELECT COUNT(DISTINCT PCUSTOMER.CUSTOMER) FROM "/BIC/FCC_NSALE" FCC_NSALE
-            JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
-            AND SSALES_GRP.SALES_GRP IN (
-                SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
-            ) 
-            JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
-            JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
-            AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008') AND "/BIC/CI_NETVAL" > 0
-            WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
-            AND TO_DATE("SID_0CALDAY") BETWEEN ytdStartDate AND ytdEndDate
-            AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) AND SID_0COMP_CODE IN (2)
-            AND FCC_NSALE."SID_0FISCVARNT" IN (9)
+            SELECT COUNT(DISTINCT customer) FROM( 
+                 SELECT PCUSTOMER."/BIC/CI_PRNCUS" as customer, SUM("/BIC/CI_NETVAL") as netvalue 
+                 FROM "/BIC/FCC_NSALE" FCC_NSALE
+                    JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
+                    JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
+                    JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
+                    AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008','G011') 
+                    -- AND "/BIC/CI_NETVAL" > 0
+                    AND PCUSTOMER."SALES_GRP" IN ( SELECT "RESULT" FROM "SplitCommaString"(:salesGroup) ) 
+                    WHERE PCUSTOMER."CREATEDON" BETWEEN ytdStartDate AND ytdEndDate
+                        AND TO_DATE("SID_0CALDAY") BETWEEN ytdStartDate AND ytdEndDate
+                        AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) 
+                        AND SID_0COMP_CODE IN (2)
+                AND FCC_NSALE."SID_0FISCVARNT" IN (9) 
+                GROUP BY PCUSTOMER."/BIC/CI_PRNCUS"
+             ) WHERE netvalue > 0
         ) "Billed-YTD"
     FROM "DUMMY";
 END

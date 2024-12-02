@@ -97,7 +97,10 @@ BEGIN
         )
         WHERE PMATERIAL."/BIC/CI_PRCTDC" IS NOT NULL AND PMATERIAL."/BIC/CI_PRCTDC" != ''
         AND PMATERIAL."/BIC/CI_PRGPDC" IS NOT NULL AND PMATERIAL."/BIC/CI_PRGPDC" != ''
-        AND PMATERIAL."/BIC/CI_PRCTDC"= :productCategory
+        -- AND PMATERIAL."/BIC/CI_PRCTDC"= :productCategory
+        AND PMATERIAL."/BIC/CI_PRCTDC" IN (
+            SELECT "RESULT" FROM "SplitCommaString"(:productCategory)
+       )
         ORDER BY TCI_PRCTDC."TXTSH", PMATERIAL."/BIC/CI_PRGPDC";
 
         FOR CUR_ROW AS PRODUCT_GROUPS

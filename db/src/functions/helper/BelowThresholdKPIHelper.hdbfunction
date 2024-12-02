@@ -4,7 +4,7 @@ FUNCTION "BelowThresholdKPIHelper"(
     endDate NVARCHAR(10),
     ytdStartDate NVARCHAR(10),
     ytdEndDate NVARCHAR(10)
-)
+)        
     RETURNS result INTEGER
     LANGUAGE SQLSCRIPT
     SQL SECURITY INVOKER AS
@@ -12,37 +12,36 @@ BEGIN
     DECLARE ytdCount INTEGER := 0;
     DECLARE currentCount INTEGER := 0;
 
-    SELECT COUNT(SID_0CUSTOMER) INTO result FROM (
+    SELECT COUNT(SID_0CUSTOMER) INTO result FROM (   
         SELECT SID_0CUSTOMER, VAL FROM (
-            SELECT "SID_0CUSTOMER", SUM("/BIC/CI_NETVAL") as VAL
-            FROM "/BIC/FCC_NSALE" FCC_NSALE
-            JOIN "/BI0/SSALES_GRP" SSALES_GRP ON FCC_NSALE."SID_0SALES_GRP" = SSALES_GRP.SID 
-            AND SSALES_GRP.SALES_GRP IN (
+            SELECT PCUSTOMER."/BIC/CI_PRNCUS" as SID_0CUSTOMER, SUM("/BIC/CI_NETVAL") as VAL
+            FROM "/BI0/PCUSTOMER" PCUSTOMER 
+            JOIN "/BI0/SCUSTOMER" SCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
+            AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008','G011') 
+            AND PCUSTOMER."SALES_GRP" IN (
                 SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
-            ) 
-            JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER"
-            JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" 
-            AND PCUSTOMER."ACCNT_GRP" IN ('G001', 'G007', 'G008')
-            WHERE TO_DATE("SID_0CALDAY") BETWEEN startDate AND endDate
-            AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) AND SID_0COMP_CODE IN (2)
-            AND "SID_0CUSTOMER" IN (
+            )
+            LEFT JOIN "/BIC/FCC_NSALE" FCC_NSALE ON SCUSTOMER."SID" = FCC_NSALE."SID_0CUSTOMER" 
+            AND  TO_DATE("SID_0CALDAY") BETWEEN startDate AND endDate
+            AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) 
+            AND SID_0COMP_CODE IN (2)
+            WHERE PCUSTOMER."/BIC/CI_PRNCUS" IN (
                 SELECT SID_0CUSTOMER FROM (
-                    SELECT "SID_0CUSTOMER", SUM("/BIC/CI_NETVAL") as VAL
-                    FROM "/BIC/FCC_NSALE" FCC_NSALE1
-                    JOIN "/BI0/SSALES_GRP" SSALES_GRP1 ON FCC_NSALE1."SID_0SALES_GRP" = SSALES_GRP1.SID 
-                    AND SSALES_GRP1.SALES_GRP IN (
+                    SELECT  PCUSTOMER1."/BIC/CI_PRNCUS" as SID_0CUSTOMER , SUM("/BIC/CI_NETVAL") as VAL
+                    FROM "/BI0/PCUSTOMER" PCUSTOMER1
+                    JOIN "/BI0/SCUSTOMER" SCUSTOMER1 ON PCUSTOMER1."CUSTOMER" = SCUSTOMER1."CUSTOMER" 
+                    AND PCUSTOMER1."ACCNT_GRP" IN ('G001', 'G007', 'G008','G011') 
+                    AND PCUSTOMER1."SALES_GRP" IN (
                         SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
-                    ) 
-                    JOIN "/BI0/SCUSTOMER" SCUSTOMER1 ON SCUSTOMER1."SID" = FCC_NSALE1."SID_0CUSTOMER"
-                    JOIN "/BI0/PCUSTOMER" PCUSTOMER1 ON PCUSTOMER1."CUSTOMER" = SCUSTOMER1."CUSTOMER" 
-                    AND PCUSTOMER1."ACCNT_GRP" IN ('G001', 'G007', 'G008')
-                    WHERE TO_DATE("SID_0CALDAY") BETWEEN ytdStartDate AND ytdEndDate
+                    )
+                    LEFT JOIN "/BIC/FCC_NSALE" FCC_NSALE1  ON SCUSTOMER1."SID" = FCC_NSALE1."SID_0CUSTOMER"              
+                    AND TO_DATE("SID_0CALDAY") BETWEEN ytdStartDate AND ytdEndDate
                     AND FCC_NSALE1."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101) AND SID_0COMP_CODE IN (2)
-                    GROUP BY "SID_0CUSTOMER"
+                    GROUP BY PCUSTOMER1."/BIC/CI_PRNCUS"
                 ) WHERE VAL > 0
             )
-            GROUP BY "SID_0CUSTOMER"
-        ) WHERE VAL <= 25000
+            GROUP BY PCUSTOMER."/BIC/CI_PRNCUS"
+        ) WHERE VAL <= 25000 OR VAL is NULL
     );
 
 END;

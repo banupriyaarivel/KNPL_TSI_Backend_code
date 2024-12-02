@@ -10,14 +10,14 @@ BEGIN
 
     IF isStartDate = 1 THEN
         IF monthVal < 4 THEN
-            -- result := (yearVal - 2) || '0401';
-            result := '20200401';
+            result := (yearVal - 2) || '0401';
+            -- result := '20200401';
         ELSE
-            -- result := (yearVal - 1) || '0401';
-            result := '20210401';
+            result := (yearVal - 1) || '0401';
+            -- result := '20210401';
         END IF;
     ELSE
-        -- result := TO_NVARCHAR(currentDateVal, 'YYYYMMDD');
-        result := '20210930';
+        result := TO_NVARCHAR(currentDateVal, 'YYYYMMDD');
+        -- result := '20210930';
     END IF;
 END;
