@@ -1,11 +1,15 @@
-//  @(requires : 'authenticated-user')
+
 using {
     USER,
     USER_SALES_GROUP_MAP,
     MAP_USER_ROLE,
-    ZEMP_MASTER_ECC
+    ZEMP_MASTER_ECC,
+    VIEW_RSM,
+    VIEW_ASM,
+    VIEW_TSI
+    
 } from '../db/user';
-
+@(requires : 'authenticated-user')
 @path: '/tsi'
 service TSIService {
 
@@ -13,10 +17,16 @@ service TSIService {
     entity UserSalesGroup as projection on USER_SALES_GROUP_MAP;
     entity MapUserRole as projection on MAP_USER_ROLE;
     entity ZempMasterEcc as projection on  ZEMP_MASTER_ECC;
+    entity RSMUsers as projection on VIEW_RSM;
+    entity ASMUsers as projection on VIEW_ASM;
+    entity TSIUsers as projection on VIEW_TSI;
     
     // action   getUsers()                                                 returns String;
-    // action   findUser(email : String)                                   returns String;
+    action   findUser(email : String)                                   returns String;
     // action   findMyUser(email : String)                                 returns String;
+
+    
+
 
     action   createIAS(
         familyName : String,

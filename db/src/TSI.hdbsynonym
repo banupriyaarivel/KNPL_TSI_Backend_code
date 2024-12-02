@@ -347,7 +347,7 @@
       "schema": "SAPGNP"
     }
   },
-  "ZEMP_MASTER_ECC_org": {
+  "ZEMP_MASTER_ECC": {
     "target": {
       "object": "ZEMP_MASTER_ECC",
       "schema": "SAPGNP"

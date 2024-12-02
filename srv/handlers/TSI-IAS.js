@@ -10,84 +10,87 @@ const https = require('https');
 const querystring = require('querystring');
 
 
-function getUsers() {
-  return new Promise((resolve, reject) => {
-    const options = {
-      hostname: 'az8wsv0bp.accounts.ondemand.com',
-      path: '/scim/Users',
-      method: 'GET',
-      headers: {
-        'Authorization': 'Basic QWxlcnRiYXNpc0BuZXJvbGFjLmNvbTpEaWdpdGFsQDEyMw=='
-      }
-    };
+// function getUsers() {
+//   return new Promise((resolve, reject) => {
+//     const options = {
+//       hostname: 'az8wsv0bp.accounts.ondemand.com',
+//       path: '/scim/Users',
+//       method: 'GET',
+//       headers: {
+//         'Authorization': 'Basic QWxlcnRiYXNpc0BuZXJvbGFjLmNvbTpEaWdpdGFsQDEyMw=='
+//       }
+//     };
 
-    const request = https.request(options, (response) => {
-      let data = '';
+//     const request = https.request(options, (response) => {
+//       let data = '';
 
-      response.on('data', (chunk) => {
-        data += chunk.toString();
-      });
+//       response.on('data', (chunk) => {
+//         data += chunk.toString();
+//       });
 
-      response.on('end', () => {
-        try {
-          const allData = JSON.parse(data);
-          resolve(allData);
-        } catch (error) {
-          reject(`Error parsing data: ${error.message}`);
-        }
-      });
-    });
+//       response.on('end', () => {
+//         try {
+//           const allData = JSON.parse(data);
+//           resolve(allData);
+//         } catch (error) {
+//           reject(`Error parsing data: ${error.message}`);
+//         }
+//       });
+//     });
 
-    request.on('error', (error) => {
-      reject(`Request failed: ${error.message}`);
-    });
+//     request.on('error', (error) => {
+//       reject(`Request failed: ${error.message}`);
+//     });
 
-    request.end();
-  });
-}
+//     request.end();
+//   });
+// }
+
+// function filterIASUsers(email) {
+//   return new Promise((resolve, reject) => {
+//     const filter = `emails.value eq "${email}"`;
+//     const queryParams = querystring.stringify({ filter });
+
+//     const options = {
+//       hostname: 'az8wsv0bp.accounts.ondemand.com',
+//       path: `/scim/Users?${queryParams}`,
+//       method: 'GET',
+//       headers: {
+//         'Authorization': 'Basic QWxlcnRiYXNpc0BuZXJvbGFjLmNvbTpEaWdpdGFsQDEyMw==',
+//         'Content-Type': 'application/scim+json'
+//       }
+//     };
+
+//     const request = https.request(options, (response) => {
+//       let data = '';
+
+//       response.on('data', (chunk) => {
+//         data += chunk.toString();
+//       });
+//       response.on('end', () => {
+//         try {
+//           const allData = JSON.parse(data);
+//           resolve(allData);
+//         } catch (error) {
+//           reject(`Error parsing data: ${error.message}`);
+//         }
+//       });
+//     });
+
+//     request.on('error', (error) => {
+//       reject(`Request failed: ${error.message}`);
+//     });
+
+//     request.end();
+//   });
+// }
 
 
-function filterIASUsers(email) {
-  return new Promise((resolve, reject) => {
-    const filter = `emails.value eq "${email}"`;
-    const queryParams = querystring.stringify({ filter });
-
-    const options = {
-      hostname: 'az8wsv0bp.accounts.ondemand.com',
-      path: `/scim/Users?${queryParams}`,
-      method: 'GET',
-      headers: {
-        'Authorization': 'Basic QWxlcnRiYXNpc0BuZXJvbGFjLmNvbTpEaWdpdGFsQDEyMw==',
-        'Content-Type': 'application/scim+json'
-      }
-    };
-
-    const request = https.request(options, (response) => {
-      let data = '';
-
-      response.on('data', (chunk) => {
-        data += chunk.toString();
-      });
-      response.on('end', () => {
-        try {
-          const allData = JSON.parse(data);
-          resolve(allData);
-        } catch (error) {
-          reject(`Error parsing data: ${error.message}`);
-        }
-      });
-    });
-
-    request.on('error', (error) => {
-      reject(`Request failed: ${error.message}`);
-    });
-
-    request.end();
-  });
-}
 
 
 // trail IAS account
+
+
 function findIASUser(email) {
   return new Promise((resolve, reject) => {
     const filter = `emails.value eq "${email}"`;
@@ -169,7 +172,7 @@ function createIASUser(newUser) {
 
 
 
-module.exports = { getUsers, filterIASUsers, findIASUser, createIASUser }
+module.exports = {findIASUser, createIASUser }
 
 
 

@@ -1,4 +1,4 @@
-//  @(requires : 'authenticated-user')
+ @(requires : 'authenticated-user')
 service TSIAdminService {
     define type SaleGroupListKPIResult {
         SALES_GRP   : String;

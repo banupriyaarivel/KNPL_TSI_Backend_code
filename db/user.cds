@@ -25,11 +25,17 @@ entity USER {
         ROLE                : Composition of many MAP_USER_ROLE
                                   on ROLE.USER_ID = $self.ID;
 
-        ASM                 : Composition of many ZEMP_MASTER_ECC
+        ASM                 : Association to many ZEMP_MASTER_ECC
                                   on ASM.EMAIL_ASM = $self.EMAIL;
 
-        TSI                 : Composition of many ZEMP_MASTER_ECC
+        TSI                 : Association to many ZEMP_MASTER_ECC
                                   on TSI.EMAIL_TSI = $self.EMAIL;
+
+        RSM                 : Association to many ZEMP_MASTER_ECC
+                                  on RSM.RSMID = $self.EMPLOYEE_CODE;
+
+        RSMDepos            : Association to many ZEMP_MASTER_ECC
+                                  on RSMDepos.EMAIL_DSM = $self.EMAIL;
 }
 
 @cds.persistence.exists
@@ -56,7 +62,7 @@ entity MAP_USER_ROLE {
         UPDATED_BY  : Integer;
 }
 
-@cds.persistence.Table
+@cds.persistence.exists
 define entity ZEMP_MASTER_ECC {
     key MANDT          : String(3) default '300';
     key TOWN           : String(40) default '0000';
@@ -66,6 +72,10 @@ define entity ZEMP_MASTER_ECC {
         RSMNAME        : String(40);
         RSMUNIQUE_SG   : String(3);
         RSMUNIQUE_DEPO : String(4);
+        DSMID          : String(12);
+        DSMUNIQUE_SG   : String(3);
+        DSMUNIQUE_DEPO : String(4);
+        EMAIL_DSM      : String(241);
     key ASMID          : String(12);
     key ASMBP          : String(10);
         ASMUNIQUE      : String(4);
@@ -78,7 +88,114 @@ define entity ZEMP_MASTER_ECC {
         TSINAME        : String(40);
         EMAIL_TSI      : String(241);
         TSI_PHN_NO     : String(10);
+        VKGRP          : String(3);
         DIVISION       : String(2);
         USNAM          : String(12);
         TIMESTAMP      : Decimal(15, 0);
+
 }
+
+
+define view VIEW_RSM as
+    select from USER as u
+    inner join MAP_USER_ROLE as r
+        on u.ID = r.USER_ID
+    left outer join USER_SALES_GROUP_MAP as sgm
+        on u.ID = sgm.USER_ID
+    {
+        u.ID   as USER_ID,
+        u.FIRST_NAME,
+        u.LAST_NAME,
+        u.EMAIL,
+        u.PROFILE_IMAGE,
+        u.IS_ARCHIVED,
+        u.APP_VERSION,
+        u.LAST_LOGIN_AT,
+        u.EMPLOYEE_CODE,
+        u.ZONE,
+        u.DESIGNATION,
+        u.MANAGER,
+        u.MOBILE,
+        u.DIVISION_IDENTIFIER,
+        u.IS_ACTIVATED,
+        sgm.SALES_GROUP,
+        sgm.ID as SALES_GROUP_ID,
+        r.ROLE_ID
+    }
+    where
+            r.ROLE_ID     = 1
+        and r.IS_ARCHIVED = 0
+        and (
+               sgm.IS_ARCHIVED is null
+            or sgm.IS_ARCHIVED =  0
+        );
+
+
+define view VIEW_ASM as
+    select from USER as u
+    inner join MAP_USER_ROLE as r
+        on u.ID = r.USER_ID
+    left outer join USER_SALES_GROUP_MAP as sgm
+        on u.ID = sgm.USER_ID
+    {
+        u.ID   as USER_ID,
+        u.FIRST_NAME,
+        u.LAST_NAME,
+        u.EMAIL,
+        u.PROFILE_IMAGE,
+        u.IS_ARCHIVED,
+        u.APP_VERSION,
+        u.LAST_LOGIN_AT,
+        u.EMPLOYEE_CODE,
+        u.ZONE,
+        u.DESIGNATION,
+        u.MANAGER,
+        u.MOBILE,
+        u.DIVISION_IDENTIFIER,
+        u.IS_ACTIVATED,
+        sgm.SALES_GROUP,
+        sgm.ID as SALES_GROUP_ID,
+        r.ROLE_ID
+    }
+    where
+            r.ROLE_ID     = 2
+        and r.IS_ARCHIVED = 0
+        and (
+               sgm.IS_ARCHIVED is null
+            or sgm.IS_ARCHIVED =  0
+        );
+
+
+define view VIEW_TSI as
+    select from USER as u
+    inner join MAP_USER_ROLE as r
+        on u.ID = r.USER_ID
+    left outer join USER_SALES_GROUP_MAP as sgm
+        on u.ID = sgm.USER_ID
+    {
+        u.ID   as USER_ID,
+        u.FIRST_NAME,
+        u.LAST_NAME,
+        u.EMAIL,
+        u.PROFILE_IMAGE,
+        u.IS_ARCHIVED,
+        u.APP_VERSION,
+        u.LAST_LOGIN_AT,
+        u.EMPLOYEE_CODE,
+        u.ZONE,
+        u.DESIGNATION,
+        u.MANAGER,
+        u.MOBILE,
+        u.DIVISION_IDENTIFIER,
+        u.IS_ACTIVATED,
+        sgm.SALES_GROUP,
+        sgm.ID as SALES_GROUP_ID,
+        r.ROLE_ID
+    }
+    where
+            r.ROLE_ID     = 3
+        and r.IS_ARCHIVED = 0
+        and (
+               sgm.IS_ARCHIVED is null
+            or sgm.IS_ARCHIVED =  0
+        );

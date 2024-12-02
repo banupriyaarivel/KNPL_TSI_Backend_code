@@ -41,6 +41,7 @@ const connectService = require('./TSI-DGA');
 const incentiveService = require('./TSI-Incentive');
 const roleService = require('./TSI-ASMRSM');
 const { findIASUser, createIASUser } = require('./TSI-IAS')
+const { ZEMP_MASTER_ECC } = cds.entities
 
 module.exports = cds.service.impl(function () {
 
@@ -55,18 +56,22 @@ module.exports = cds.service.impl(function () {
     // })
 
 
-    // this.on('findMyUser', async ({data : {
-    //     email
-    // }}) => {
-    //     return await filterMyIASUsers(email)
-    // })
+    this.on('findUser', async ({data : {
+        email
+    }}) => {
+        const result = await findIASUser(email)
+        if(result.totalResults === 0){
+            return {warning: "User not found in IAS"}
+        }
+        return {data:result}
+    })
 
     this.on('createIAS', async ({ data: {
         familyName, givenName, email, phoneNumber, userName, active, password
     } }) => {
         const userExist = await findIASUser(email)
 
-        if(userExist.totalResults === 0){
+        if (userExist.totalResults === 0) {
             const newUser = {
                 schemas: [
                     "urn:ietf:params:scim:schemas:core:2.0:User",
@@ -96,17 +101,17 @@ module.exports = cds.service.impl(function () {
                     mailVerified: true
                 }
             };
-            
+
             const response = await createIASUser(newUser);
             if (response.id) {
                 return { status: 'Success', message: `User created successfully with this ID ${response.id}` };
             } else {
-                return { status: 'Warning', message: response.detail, Scim_Type:response.scimType};
+                return { status: 'Warning', message: response.detail, Scim_Type: response.scimType };
             }
             // console.log(newUser)
 
         } else {
-        return { status: 'Warning', message: 'User allready exist', value: userExist};
+            return { status: 'Warning', message: 'User allready exist', value: userExist };
         }
 
 
