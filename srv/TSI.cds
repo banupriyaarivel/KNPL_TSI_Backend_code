@@ -38,6 +38,11 @@ service TSIService {
         password:String
         ) returns String;
 
+    action updatePass(
+        id : String,
+        password : String
+    ) returns String;
+
     define type GeneralValueType {
         VALUE : String;
         IS_HL : Boolean

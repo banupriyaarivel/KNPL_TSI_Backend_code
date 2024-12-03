@@ -40,7 +40,7 @@ const pragatiService = require('./TSI-Pragati');
 const connectService = require('./TSI-DGA');
 const incentiveService = require('./TSI-Incentive');
 const roleService = require('./TSI-ASMRSM');
-const { findIASUser, createIASUser } = require('./TSI-IAS')
+const { findIASUser, createIASUser, setPassword } = require('./TSI-IAS')
 const { ZEMP_MASTER_ECC } = cds.entities
 
 module.exports = cds.service.impl(function () {
@@ -56,14 +56,14 @@ module.exports = cds.service.impl(function () {
     // })
 
 
-    this.on('findUser', async ({data : {
+    this.on('findUser', async ({ data: {
         email
-    }}) => {
+    } }) => {
         const result = await findIASUser(email)
-        if(result.totalResults === 0){
-            return {warning: "User not found in IAS"}
+        if (result.totalResults === 0) {
+            return { warning: "User not found in IAS" }
         }
-        return {data:result}
+        return { data: result }
     })
 
     this.on('createIAS', async ({ data: {
@@ -115,6 +115,33 @@ module.exports = cds.service.impl(function () {
         }
 
 
+    })
+
+    this.on('updatePass', async ({ data: {
+        id, password
+    } }) => {
+        if (id) {
+            let newPassData = {
+                "schemas": [
+                    "urn:ietf:params:scim:api:messages:2.0:PatchOp"
+                ],
+                "Operations": [
+                    {
+                        "op": "add",
+                        "value": {
+                            "password": password
+                        }
+                    }]
+            }
+            let response = await setPassword(id, newPassData)
+            if (!response) {
+                return { message: "initial password successfully updated" }
+            } else {
+                return { message: response.detail, scimType : response.scimType }
+            }
+        } else {
+            return { message: "User SCIM id is required" }
+        }
     })
 
     // Summary-Home

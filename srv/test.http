@@ -363,5 +363,13 @@ Content-Type: application/json
   "EMAIL" : "jagjotsinghbakshi@nerolac.com"
 }
 
+###
+POST http://localhost:4004/tsi/updatePass HTTP/1.1
+Content-Type: application/json
+
+{
+  "id" : "1edbb070-0f5a-4cf8-b19d-74d7ce603917",
+  "password" : "Pass@1234"
+}
 
 
