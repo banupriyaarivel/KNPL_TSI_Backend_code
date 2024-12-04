@@ -29,7 +29,8 @@ BEGIN
             AND SSALES_GRP.SALES_GRP IN (
                 SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
             ) WHERE TO_DATE("CALDAY") BETWEEN startDate AND endDate;
-
+        IF "TOTAL_DAYS" = 0 THEN
+             RESULT_COUNT := 0 ;
             SELECT (COUNT(ACO_VIST100."CUSTOMER") / "TOTAL_DAYS") INTO "RESULT_COUNT" 
             FROM "/BIC/ACO_VIST100" ACO_VIST100
             JOIN "/BI0/SSALES_GRP" SSALES_GRP ON ACO_VIST100."SALES_GRP" = SSALES_GRP.SALES_GRP AND SSALES_GRP.SALES_GRP IN (
@@ -37,6 +38,7 @@ BEGIN
             ) 
             WHERE TO_DATE("CALDAY") BETWEEN startDate AND endDate
             AND "/BIC/CI_BPROL" IN ('CRM000', 'BUP002');
+        END IF;
         END IF;        
     ELSE 
         IF IsAvg = false THEN
@@ -64,7 +66,8 @@ BEGIN
             )
             WHERE TO_DATE("CALDAY") BETWEEN startDate AND endDate;
 
-
+        IF "TOTAL_DAYS" = 0 THEN
+            RESULT_COUNT := 0 ;
             SELECT (COUNT(ACO_VIST100."CUSTOMER") / "TOTAL_DAYS") INTO "RESULT_COUNT"  
             FROM "/BIC/ACO_VIST100" ACO_VIST100
             JOIN "/BI0/SSALES_GRP" SSALES_GRP ON ACO_VIST100."SALES_GRP" = SSALES_GRP.SALES_GRP AND SSALES_GRP.SALES_GRP IN (
@@ -76,6 +79,7 @@ BEGIN
             )
             WHERE TO_DATE("CALDAY") BETWEEN startDate AND endDate
             AND "/BIC/CI_BPROL" IN ('CRM000', 'BUP002');
+        END IF;
         END IF;
     END IF;
     
