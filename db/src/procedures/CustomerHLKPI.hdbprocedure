@@ -524,7 +524,7 @@ BEGIN
                         AND PCUSTOMER."SALES_GRP" IN (SELECT "RESULT" FROM "SplitCommaString"(:salesGroup))
                         JOIN "/BI0/SPLANT" SPLANT ON FCC_NSALE."SID_0PLANT" = SPLANT."SID"
                         JOIN "/BI0/PPLANT" PPLANT ON SPLANT."PLANT" = PPLANT."PLANT" AND PPLANT."/BIC/CI_GEODIV" != 'EX'
-                        WHERE "SID_0CALDAY" BETWEEN lyYtdStartDate AND lyYtdEndDate
+                        WHERE "SID_0CALDAY" BETWEEN lyYtdFullStartDate AND lyYtdFullEndDate
                         AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101)
                         AND SID_0COMP_CODE IN (2)
                         GROUP BY PCUSTOMER."/BIC/CI_PRNCUS"
@@ -604,7 +604,7 @@ BEGIN
                         AND PCUSTOMER."SALES_GRP" IN (SELECT "RESULT" FROM "SplitCommaString"(:salesGroup))
                         JOIN "/BI0/SPLANT" SPLANT ON FCC_NSALE."SID_0PLANT" = SPLANT."SID"
                         JOIN "/BI0/PPLANT" PPLANT ON SPLANT."PLANT" = PPLANT."PLANT" AND PPLANT."/BIC/CI_GEODIV" != 'EX'
-                        WHERE "SID_0CALDAY" BETWEEN lyYtdStartDate AND lyYtdEndDate
+                        WHERE "SID_0CALDAY" BETWEEN lyYtdFullStartDate AND lyYtdFullEndDate
                         AND FCC_NSALE."SID_0MATL_TYPE" IN (5, 15, 91, 92, 101)
                         AND SID_0COMP_CODE IN (2)
                         GROUP BY PCUSTOMER."/BIC/CI_PRNCUS"
