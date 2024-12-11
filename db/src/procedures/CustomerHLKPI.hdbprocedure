@@ -81,40 +81,62 @@ BEGIN
     IF :kpiType = 'COLLECTION' THEN
         -- Yesterday and MTD
         IF :rowHeader = 'Yesterday' THEN
-            SELECT STRING_AGG(SID_0CUSTOMER, ',') INTO CUSTOMER_CODES 
-            FROM ( SELECT DISTINCT SID_0CUSTOMER
-            FROM "/BI0/F0FIAR_C03" F0FIAR_C03
-            JOIN "/BI0/SSALES_GRP" SSALES_GRP 
-            ON F0FIAR_C03."SID_0SALES_GRP" = SSALES_GRP.SID 
-            AND SSALES_GRP.SALES_GRP IN (
-                SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
-            )
-            JOIN "/BI0/SAC_DOC_TYP" SAC_DOC_TYP 
-            ON SAC_DOC_TYP."SID" = F0FIAR_C03."SID_0AC_DOC_TYP" 
-            AND SAC_DOC_TYP."AC_DOC_TYP" IN ('DZ', 'DY', 'DX', 'CQ')
-            JOIN "/BI0/SFI_DOCSTAT" SFI_DOCSTAT 
-            ON SFI_DOCSTAT."SID" = F0FIAR_C03."SID_0FI_DOCSTAT" 
-            AND SFI_DOCSTAT."FI_DOCSTAT" IN ('C', 'O')
-            JOIN "/BI0/SDATE" SDATE ON SDATE."SID" = F0FIAR_C03."SID_0CALDAY"
-            WHERE SDATE."DATE0" BETWEEN yesterdayDate AND yesterdayDate);
+            -- SELECT STRING_AGG(SID_0CUSTOMER, ',') INTO CUSTOMER_CODES 
+            -- FROM ( SELECT DISTINCT SID_0CUSTOMER
+            -- FROM "/BI0/F0FIAR_C03" F0FIAR_C03
+            -- JOIN "/BI0/SSALES_GRP" SSALES_GRP 
+            -- ON F0FIAR_C03."SID_0SALES_GRP" = SSALES_GRP.SID 
+            -- AND SSALES_GRP.SALES_GRP IN (
+            --     SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
+            -- )
+            -- JOIN "/BI0/SAC_DOC_TYP" SAC_DOC_TYP 
+            -- ON SAC_DOC_TYP."SID" = F0FIAR_C03."SID_0AC_DOC_TYP" 
+            -- AND SAC_DOC_TYP."AC_DOC_TYP" IN ('DZ', 'DY', 'DX', 'CQ')
+            -- JOIN "/BI0/SFI_DOCSTAT" SFI_DOCSTAT 
+            -- ON SFI_DOCSTAT."SID" = F0FIAR_C03."SID_0FI_DOCSTAT" 
+            -- AND SFI_DOCSTAT."FI_DOCSTAT" IN ('C', 'O')
+            -- JOIN "/BI0/SDATE" SDATE ON SDATE."SID" = F0FIAR_C03."SID_0CALDAY"
+            -- WHERE SDATE."DATE0" BETWEEN yesterdayDate AND yesterdayDate);
+
+            SELECT STRING_AGG(customer, ',') INTO CUSTOMER_CODES  FROM ( 
+               SELECT DISTINCT PCUSTOMER."/BIC/CI_PRNCUS" as customer
+               FROM "/BI0/F0FIAR_C03" F0FIAR_C03
+               JOIN "/BI0/SSALES_GRP" SSALES_GRP ON F0FIAR_C03."SID_0SALES_GRP" = SSALES_GRP.SID 
+               JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = F0FIAR_C03."SID_0CUSTOMER"
+               JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" AND PCUSTOMER."SALES_GRP" IN ( SELECT "RESULT" FROM "SplitCommaString"(:salesGroup))
+               JOIN "/BI0/SAC_DOC_TYP" SAC_DOC_TYP ON SAC_DOC_TYP."SID" = F0FIAR_C03."SID_0AC_DOC_TYP" AND SAC_DOC_TYP."AC_DOC_TYP" IN ('DZ', 'DY', 'DX', 'CQ')
+               JOIN "/BI0/SFI_DOCSTAT" SFI_DOCSTAT ON SFI_DOCSTAT."SID" = F0FIAR_C03."SID_0FI_DOCSTAT" AND SFI_DOCSTAT."FI_DOCSTAT" IN ('C', 'O')
+               JOIN "/BI0/SDATE" SDATE ON SDATE."SID" = F0FIAR_C03."SID_0CALDAY"
+               WHERE SDATE."DATE0" BETWEEN yesterdayDate AND yesterdayDate);
         ELSE
-            SELECT STRING_AGG(SID_0CUSTOMER, ',') INTO CUSTOMER_CODES 
-            FROM ( SELECT DISTINCT SID_0CUSTOMER
-            FROM "/BI0/F0FIAR_C03" F0FIAR_C03
-            JOIN "/BI0/SSALES_GRP" SSALES_GRP 
-            ON F0FIAR_C03."SID_0SALES_GRP" = SSALES_GRP.SID 
-            AND SSALES_GRP.SALES_GRP IN (
-                SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
-            )
-            JOIN "/BI0/SAC_DOC_TYP" SAC_DOC_TYP 
-            ON SAC_DOC_TYP."SID" = F0FIAR_C03."SID_0AC_DOC_TYP" 
-            AND SAC_DOC_TYP."AC_DOC_TYP" IN ('DZ', 'DY', 'DX', 'CQ')
-            JOIN "/BI0/SFI_DOCSTAT" SFI_DOCSTAT 
-            ON SFI_DOCSTAT."SID" = F0FIAR_C03."SID_0FI_DOCSTAT" 
-            AND SFI_DOCSTAT."FI_DOCSTAT" IN ('C', 'O')
-            JOIN "/BI0/SDATE" SDATE 
-            ON SDATE."SID" = F0FIAR_C03."SID_0CALDAY"
-            WHERE SDATE."DATE0" BETWEEN mtdStartDate AND mtdEndDate);
+            -- SELECT STRING_AGG(SID_0CUSTOMER, ',') INTO CUSTOMER_CODES 
+            -- FROM ( SELECT DISTINCT SID_0CUSTOMER
+            -- FROM "/BI0/F0FIAR_C03" F0FIAR_C03
+            -- JOIN "/BI0/SSALES_GRP" SSALES_GRP 
+            -- ON F0FIAR_C03."SID_0SALES_GRP" = SSALES_GRP.SID 
+            -- AND SSALES_GRP.SALES_GRP IN (
+            --     SELECT "RESULT" FROM "SplitCommaString"(:salesGroup)
+            -- )
+            -- JOIN "/BI0/SAC_DOC_TYP" SAC_DOC_TYP 
+            -- ON SAC_DOC_TYP."SID" = F0FIAR_C03."SID_0AC_DOC_TYP" 
+            -- AND SAC_DOC_TYP."AC_DOC_TYP" IN ('DZ', 'DY', 'DX', 'CQ')
+            -- JOIN "/BI0/SFI_DOCSTAT" SFI_DOCSTAT 
+            -- ON SFI_DOCSTAT."SID" = F0FIAR_C03."SID_0FI_DOCSTAT" 
+            -- AND SFI_DOCSTAT."FI_DOCSTAT" IN ('C', 'O')
+            -- JOIN "/BI0/SDATE" SDATE 
+            -- ON SDATE."SID" = F0FIAR_C03."SID_0CALDAY"
+            -- WHERE SDATE."DATE0" BETWEEN mtdStartDate AND mtdEndDate);
+
+            SELECT STRING_AGG(customer, ',') INTO CUSTOMER_CODES  FROM ( 
+                SELECT DISTINCT PCUSTOMER."/BIC/CI_PRNCUS" as customer
+                FROM "/BI0/F0FIAR_C03" F0FIAR_C03
+                JOIN "/BI0/SSALES_GRP" SSALES_GRP ON F0FIAR_C03."SID_0SALES_GRP" = SSALES_GRP.SID 
+                JOIN "/BI0/SCUSTOMER" SCUSTOMER ON SCUSTOMER."SID" = F0FIAR_C03."SID_0CUSTOMER"
+                JOIN "/BI0/PCUSTOMER" PCUSTOMER ON PCUSTOMER."CUSTOMER" = SCUSTOMER."CUSTOMER" AND PCUSTOMER."SALES_GRP" IN ( SELECT "RESULT" FROM "SplitCommaString"(:salesGroup))
+                JOIN "/BI0/SAC_DOC_TYP" SAC_DOC_TYP ON SAC_DOC_TYP."SID" = F0FIAR_C03."SID_0AC_DOC_TYP" AND SAC_DOC_TYP."AC_DOC_TYP" IN ('DZ', 'DY', 'DX', 'CQ')
+                JOIN "/BI0/SFI_DOCSTAT" SFI_DOCSTAT ON SFI_DOCSTAT."SID" = F0FIAR_C03."SID_0FI_DOCSTAT" AND SFI_DOCSTAT."FI_DOCSTAT" IN ('C', 'O')
+                JOIN "/BI0/SDATE" SDATE ON SDATE."SID" = F0FIAR_C03."SID_0CALDAY"
+                WHERE SDATE."DATE0" BETWEEN mtdStartDate AND mtdEndDate);
         END IF;
     END IF;
 

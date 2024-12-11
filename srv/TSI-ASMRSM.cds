@@ -50,6 +50,7 @@ extend service TSIService with {
         SALES_GROUP         : String;
         ASM_EMAIL            : String;
         ASM_NAME            : String;
+        TSI_NAME            : String;
         IS_SELECTED         : Boolean;
         IS_VISIBLE          : Boolean;
     }
